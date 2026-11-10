@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="AttackData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/attack_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"air_down"
+damage = 1
+startup = 0.03
+active = 0.22
+recovery = 0.08
+hitbox_offset = Vector2(0, 26)
+hitbox_size = Vector2(76, 84)
+launch_vector = Vector2(260, -320)
+inherit_velocity = 0.6
+bounces_attacker = true
+hitstop = 0.04
+shake = 4.0
