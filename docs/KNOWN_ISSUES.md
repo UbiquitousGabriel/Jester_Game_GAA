@@ -2,20 +2,25 @@
 
 ## Blocking
 
-1. **The project has never been opened or run in Godot.** The build session could not install the engine. Every script passes a syntax check (`gdparse`), which does not catch type errors, wrong engine API names, or scene-file mistakes. Expect to fix some errors on first open.
-2. **The smoke test has never been executed.** `tests/smoke_test.gd` is written but its results are unknown.
-3. **No GitHub remote.** Commits are local only.
+None. The project imports and runs on Godot 4.7.2 with no script errors.
 
-## Unverified behaviour (needs engine run, then human playtest)
+## Unverified (needs a human playtest)
 
-- All movement tuning values are first guesses calculated on paper. Feel is untested.
-- Pogo hitbox reach versus spike collision: the bounce should trigger before the spikes do.
-- One-way platforms with launched enemies passing up through them.
-- Enemy ricochet and floor-bounce thresholds.
+- **Feel.** All tuning values are first guesses calculated on paper. The smoke test proves the mechanics function, not that they are fun.
 - Camera framing, look-ahead strength and dynamic zoom.
-- Hit-stop interaction with input buffering.
-- HUD label anchoring at different window sizes.
+- Hit-stop length and its interaction with input buffering (the smoke test runs with hit-stop off).
 - Gamepad bindings.
+- HUD layout at window sizes other than 1280x720.
+
+## No automated coverage yet
+
+Charge attack scaling, upswing, wall ricochet, floor bounce, coyote time, jump buffering, perfect-vault timing, checkpoints beyond the first, the kill plane.
+
+## Observations from the first engine run
+
+- A held jump peaks at 239.6 px against a configured 230 px (fixed-step integration overshoot). Harmless; note it when tuning.
+- A full jump from the start area lands on the one-way platform above. Intended, but it surprised the first version of the smoke test.
+- The Jester's resting hammer overlaps his hat in the placeholder art.
 
 ## Design gaps in the prototype
 
@@ -29,4 +34,4 @@
 ## Tooling
 
 - `gdlint` reports one style warning (`max-returns` in `jester_visual.gd`). Cosmetic.
-- The Development Bible PDF (48 MB) is not in the repository. Add it under Git LFS once a remote exists.
+- The Development Bible PDF (48 MB) is not in the repository. It needs Git LFS, which has not been tested against this remote.

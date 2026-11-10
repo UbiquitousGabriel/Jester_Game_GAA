@@ -6,7 +6,7 @@ A vibrant, momentum-driven 2D hack-and-slash platformer. A murdered court jester
 
 ## Status
 
-Prototype, Milestones 0-2 code written. **Not yet run in Godot.** See `docs/DEVELOPMENT_LOG.md` and `docs/KNOWN_ISSUES.md` before trusting anything here.
+Prototype, Milestones 0-2. The project imports cleanly on Godot 4.7.2 and the scripted smoke test passes (28 checks). **No human has playtested it yet**, so feel and tuning are unverified. See `docs/DEVELOPMENT_LOG.md` and `docs/KNOWN_ISSUES.md`.
 
 ## Run it
 
@@ -52,4 +52,4 @@ tools/lint.sh                      # syntax only, needs: pip install gdtoolkit
 - [Known issues](docs/KNOWN_ISSUES.md)
 - [Environment](docs/ENVIRONMENT.md)
 
-The design source of truth is *The Jester's Court: Complete Development Bible*, Revision 2.0 (November 2026). It is not yet stored in this repository.
+The design source of truth is *The Jester's Court: Complete Development Bible*, Revision 2.0 (November 2026). It is not yet stored in this repository (48 MB; add through Git LFS).

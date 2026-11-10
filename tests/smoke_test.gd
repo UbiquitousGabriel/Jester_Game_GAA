@@ -65,6 +65,9 @@ func _run() -> void:
 	_check(player.is_on_floor(), "player lands after a full jump")
 
 	# --- Short hop (variable jump height) ---
+	# Re-measure: the full jump can land on a one-way platform above the start.
+	await _frames(10)
+	ground_y = player.global_position.y
 	Input.action_press(&"jump")
 	await _frames(3)
 	Input.action_release(&"jump")
@@ -114,6 +117,95 @@ func _run() -> void:
 		"launched enemy hits the second enemy exactly once (got %d)" % victim_hits[0]
 	)
 	_check(victim.health == victim.max_health - 1, "collision damages the second enemy once")
+	projectile.queue_free()
+	victim.queue_free()
+	await _frames(5)
+
+	# --- Hammer vault ---
+	var counts: Dictionary[String, int] = {"pogo": 0, "vault": 0, "respawn": 0}
+	player.pogoed.connect(func() -> void: counts["pogo"] += 1)
+	player.vaulted.connect(func(_perfect: bool) -> void: counts["vault"] += 1)
+	player.respawned.connect(func() -> void: counts["respawn"] += 1)
+	player.global_position = Vector2(200.0, -4.0)
+	player.velocity = Vector2.ZERO
+	await _frames(40)
+	ground_y = player.global_position.y
+	Input.action_press(&"move_down")
+	Input.action_press(&"attack_heavy")
+	var vault_apex: float = await _track_apex(player, 4)
+	Input.action_release(&"attack_heavy")
+	Input.action_release(&"move_down")
+	vault_apex = minf(vault_apex, await _track_apex(player, 80))
+	_check(counts["vault"] == 1, "down + heavy on the ground vaults once")
+	_check(
+		ground_y - vault_apex > player.config.jump_height + 20.0,
+		"vault goes higher than a jump (got %.1f)" % (ground_y - vault_apex)
+	)
+
+	# --- Pogo off an enemy ---
+	await _frames(30)
+	var stool := _spawn_guard(level, Vector2(300.0, 0.0))
+	await _frames(5)
+	player.global_position = Vector2(300.0, -190.0)
+	player.velocity = Vector2.ZERO
+	Input.action_press(&"move_down")
+	Input.action_press(&"attack_light")
+	await _frames(3)
+	Input.action_release(&"attack_light")
+	await _frames(25)
+	Input.action_release(&"move_down")
+	_check(counts["pogo"] == 1, "down + light in the air pogos off an enemy (got %d)" % counts["pogo"])
+	_check(stool.health == stool.max_health - 1, "pogo damages the enemy")
+	stool.queue_free()
+	await _frames(90)
+
+	# --- Pogo off spikes, then fall into them ---
+	var respawns_before: int = counts["respawn"]
+	var pogos_before: int = counts["pogo"]
+	player.global_position = Vector2(1700.0, 60.0)
+	player.velocity = Vector2.ZERO
+	Input.action_press(&"move_down")
+	Input.action_press(&"attack_light")
+	await _frames(3)
+	Input.action_release(&"attack_light")
+	await _frames(12)
+	Input.action_release(&"move_down")
+	_check(counts["pogo"] == pogos_before + 1, "pogo bounces off spikes")
+	_check(counts["respawn"] == respawns_before, "pogo over spikes does not respawn the player")
+	await _frames(120)
+	_check(counts["respawn"] == respawns_before + 1, "falling into spikes respawns the player")
+	_check(player.global_position.x < 1500.0, "respawn returns the player to a checkpoint")
+
+	# --- Bounce pad ---
+	await _frames(30)
+	pogos_before = counts["pogo"]
+	player.global_position = Vector2(1250.0, -60.0)
+	player.velocity = Vector2.ZERO
+	var pad_apex: float = await _track_apex(player, 90)
+	_check(counts["pogo"] > pogos_before, "bounce pad launches the player")
+	_check(pad_apex < -450.0, "bounce pad reaches the upper elevation (apex y %.1f)" % pad_apex)
+
+	# --- Launched enemy smashes a crate and dies on spikes ---
+	var crates_before := get_tree().get_nodes_in_group(&"breakable").size()
+	var wrecker := _spawn_guard(level, Vector2(2150.0, 0.0))
+	await _frames(5)
+	var crate_hit := HitData.new()
+	crate_hit.launch_velocity = Vector2(1400.0, -250.0)
+	wrecker.take_hit(crate_hit)
+	await _frames(60)
+	var crates_after := get_tree().get_nodes_in_group(&"breakable").size()
+	_check(crates_after < crates_before, "launched enemy smashes crates (%d -> %d)" % [crates_before, crates_after])
+
+	var doomed := _spawn_guard(level, Vector2(1400.0, 0.0))
+	await _frames(5)
+	var spike_hit := HitData.new()
+	spike_hit.launch_velocity = Vector2(500.0, -500.0)
+	doomed.take_hit(spike_hit)
+	await _frames(90)
+	_check(
+		not is_instance_valid(doomed) or doomed.state == Enemy.State.DEFEATED,
+		"enemy launched into spikes is defeated"
+	)
 
 
 func _spawn_guard(level: Node, at: Vector2) -> Enemy:

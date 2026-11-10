@@ -85,11 +85,11 @@ func _draw_hammer() -> void:
 ## Hammer angle in radians. 0 points forward, -90 degrees points up.
 func _hammer_angle() -> float:
 	if _hammer == null:
-		return deg_to_rad(-105.0)
+		return deg_to_rad(-150.0)
 	if _hammer.state == Hammer.State.CHARGING:
-		return deg_to_rad(-150.0 - 25.0 * _hammer.charge_ratio)
+		return deg_to_rad(-165.0 - 25.0 * _hammer.charge_ratio)
 	if _hammer.current_attack == null:
-		return deg_to_rad(-105.0)
+		return deg_to_rad(-150.0)
 	# The swing completes during startup + active, then holds through recovery.
 	var t := minf(_hammer.attack_progress() * 2.5, 1.0)
 	match _hammer.current_attack.id:

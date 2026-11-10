@@ -39,3 +39,28 @@ No claim is made that the game runs or feels good.
 1. Run `tools/validate.sh` on Godot 4.7.2; fix errors.
 2. Playtest and tune.
 3. Designate the GitHub repository; push.
+
+## 2026-11-10: Session 1, continued
+
+The creative director designated `UbiquitousGabriel/Jester_Game_GAA` and approved installing tools.
+
+### Done
+
+- Installed the official Godot 4.7.2 stable build (checksum verified).
+- First engine run: import clean, no parser or runtime errors in any script or scene.
+- Fixed one smoke-test bug (it measured the short hop from the wrong ground height after landing on a platform). No game code needed fixing.
+- Extended the smoke test from 16 to 28 checks: vault, pogo off enemies, pogo off spikes, spike respawn, bounce pad, crate smashing, spike defeat.
+- Moved the Jester's resting hammer pose off his head (placeholder art only).
+- Rendered the smoke-test run under a virtual display and inspected frames: level, characters, HUD and chain counter draw correctly.
+
+### Test results
+
+| Command | Result |
+| --- | --- |
+| `godot --headless --path . --import` | Pass, exit 0 |
+| `godot --headless --path . res://tests/smoke_test.tscn` | 28 passed, 0 failed |
+| Same test rendered with `xvfb-run` and `--write-movie` | 28 passed; frames inspected |
+| `gdparse` on all scripts | Pass |
+| Interactive human playtest | **Not run** |
+
+The earlier "Blocked" and "Not run" entries above are superseded by this section.

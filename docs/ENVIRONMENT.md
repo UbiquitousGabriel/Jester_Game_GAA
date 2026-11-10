@@ -13,10 +13,10 @@
 
 | Tool | Found |
 | --- | --- |
-| Godot | Not installed; download and execution was blocked by the session's security policy |
+| Godot | 4.7.2.stable.official.ed1daf0bf, official Linux x86_64 release, SHA-512 verified against the release's SHA512-SUMS.txt |
 | Git | 2.43.0 |
 | Git LFS | Installed |
-| GitHub CLI | Installed, token invalid |
+| GitHub CLI | Installed, token invalid; pushes go through the session's git proxy |
 | Python | 3.13 |
 | Pillow | 12.3.0 |
 | gdtoolkit | 4.5.0 (syntax check only) |
