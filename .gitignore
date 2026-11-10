@@ -1,0 +1,46 @@
+# Godot 4
+.godot/
+.nomedia
+*.translation
+export_presets.cfg
+.import/
+
+# Builds and exports
+build/
+builds/
+export/
+*.pck
+*.apk
+*.aab
+*.exe
+*.x86_64
+*.dmg
+*.app/
+
+# Mono / C# (unused, kept for safety)
+.mono/
+data_*/
+mono_crash.*.json
+
+# Editors and OS
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Python tooling
+__pycache__/
+*.pyc
+.venv/
+
+# Art tool backups and temp files
+*.kra~
+*.blend1
+*.blend2
+*~
+
+# Secrets
+.env
+*.pem
+*.key

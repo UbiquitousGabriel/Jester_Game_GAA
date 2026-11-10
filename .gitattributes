@@ -1,0 +1,20 @@
+# Normalize line endings
+* text=auto eol=lf
+
+# Godot text formats stay diffable
+*.gd text
+*.tscn text
+*.tres text
+*.godot text
+*.cfg text
+
+# Large binary source assets go through Git LFS
+*.kra filter=lfs diff=lfs merge=lfs -text
+*.psd filter=lfs diff=lfs merge=lfs -text
+*.blend filter=lfs diff=lfs merge=lfs -text
+*.wav filter=lfs diff=lfs merge=lfs -text
+*.ogg filter=lfs diff=lfs merge=lfs -text
+*.mp3 filter=lfs diff=lfs merge=lfs -text
+*.mp4 filter=lfs diff=lfs merge=lfs -text
+*.pdf filter=lfs diff=lfs merge=lfs -text
+assets/source/**/*.png filter=lfs diff=lfs merge=lfs -text
