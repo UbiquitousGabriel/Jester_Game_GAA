@@ -119,7 +119,7 @@ func _physics_process(_delta: float) -> void:
 		return
 	# Safety net below the level.
 	if _player.global_position.y > KILL_PLANE_Y:
-		_player.respawn()
+		_player.die()
 	for node: Node in get_tree().get_nodes_in_group(&"enemy"):
 		var enemy := node as Enemy
 		if enemy != null and enemy.global_position.y > KILL_PLANE_Y:

@@ -44,3 +44,6 @@ __pycache__/
 .env
 *.pem
 *.key
+
+# Godot import metadata for source art (excluded via .gdignore)
+assets/source/**/*.import

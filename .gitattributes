@@ -17,4 +17,5 @@
 *.mp3 filter=lfs diff=lfs merge=lfs -text
 *.mp4 filter=lfs diff=lfs merge=lfs -text
 *.pdf filter=lfs diff=lfs merge=lfs -text
-assets/source/**/*.png filter=lfs diff=lfs merge=lfs -text
+# Source PNGs are stored as normal Git files: they are small (about 2 MB each),
+# and LFS uploads are not reachable from the automated build sessions.

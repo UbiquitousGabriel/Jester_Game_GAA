@@ -75,6 +75,10 @@ func _physics_process(delta: float) -> void:
 	if Input.is_action_just_pressed(&"attack_light"):
 		_light_buffer = input_buffer_time
 
+	if _player.is_dead():
+		_cancel()
+		return
+
 	match state:
 		State.IDLE:
 			_process_idle(input_y)
@@ -103,6 +107,25 @@ func _physics_process(delta: float) -> void:
 				current_attack = null
 
 
+## 0..1 progress through the current phase (startup, active or recovery).
+func phase_progress() -> float:
+	if current_attack == null:
+		return 0.0
+	var length := 0.0
+	match state:
+		State.STARTUP:
+			length = current_attack.startup
+		State.ACTIVE:
+			length = current_attack.active
+		State.RECOVERY:
+			length = current_attack.recovery
+		_:
+			return 0.0
+	if length <= 0.0:
+		return 1.0
+	return clampf(1.0 - _state_timer / length, 0.0, 1.0)
+
+
 ## 0..1 progress through the whole current swing, for visuals.
 func attack_progress() -> float:
 	if current_attack == null:
@@ -112,6 +135,13 @@ func attack_progress() -> float:
 
 func is_attacking() -> bool:
 	return state == State.STARTUP or state == State.ACTIVE or state == State.RECOVERY
+
+
+func _cancel() -> void:
+	state = State.IDLE
+	current_attack = null
+	charge_ratio = 0.0
+	_player.facing_locked = false
 
 
 func _process_idle(input_y: float) -> void:

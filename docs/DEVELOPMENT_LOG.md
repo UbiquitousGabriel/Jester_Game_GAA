@@ -64,3 +64,32 @@ The creative director designated `UbiquitousGabriel/Jester_Game_GAA` and approve
 | Interactive human playtest | **Not run** |
 
 The earlier "Blocked" and "Not run" entries above are superseded by this section.
+
+## 2026-11-10: Jester sprite integration (`art/jester-sprites`)
+
+The creative director supplied seven generated sprite sheets (57 frames).
+
+### Done
+
+- `tools/art/process_jester_sheets.py`: background removal, edge un-blending, frame splitting, size normalisation across sheets, shared-anchor alignment, SpriteFrames generation. Rebuilds in about 5 seconds.
+- `jester_visual.gd` rewritten: `AnimatedSprite2D` with state-driven animation, phase-locked attack frames, squash and stretch over the painted poses, dash and high-speed afterimages.
+- Death beat: hazards and the kill plane now play the hurt and defeat animations for 0.9 s before respawn, and reset the chain.
+- Mipmapped frame imports; project default canvas filter is now linear with mipmaps.
+- `tools/capture/showcase.tscn`: scripted run through every animation, for recording footage.
+
+### Test results
+
+| Command | Result |
+| --- | --- |
+| `godot --headless --path . --import` | Pass |
+| `tests/smoke_test.tscn` | 39 passed, 0 failed (11 new: sprite, animation and death-beat checks) |
+| Showcase rendered at 1920x1080, frames inspected | All animations trigger; no halos; consistent scale |
+| `tools/lint.sh` | Pass |
+| Human playtest | Not run |
+
+## 2026-11-10: Community Aide as stand-in guard
+
+- `tools/art/process_aide_sheets.py`: alpha and black-key cutout, shadow and caption removal, outline rebuild, scale normalisation, SpriteFrames generation (24 frames).
+- `guard_visual.gd` rewritten to drive his sprite from the Enemy state machine; hit flash, tumble and lying pose kept.
+- Smoke test: 41 passed, 0 failed (2 new guard sprite checks). Showcase at 1080p inspected.
+- Git: source sheets are now normal Git files (LFS uploads unreachable from build sessions). The earlier local commit on this branch still holds LFS pointers; pushing needs the creative director's decision (see conversation).
