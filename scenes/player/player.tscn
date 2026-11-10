@@ -1,0 +1,34 @@
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="Script" path="res://scripts/movement/player_controller.gd" id="1"]
+[ext_resource type="Resource" path="res://resources/movement/jester_movement.tres" id="2"]
+[ext_resource type="Script" path="res://scripts/combat/hammer.gd" id="3"]
+[ext_resource type="Resource" path="res://resources/combat/light_side.tres" id="4"]
+[ext_resource type="Resource" path="res://resources/combat/light_up.tres" id="5"]
+[ext_resource type="Resource" path="res://resources/combat/air_down.tres" id="6"]
+[ext_resource type="Resource" path="res://resources/combat/heavy.tres" id="7"]
+[ext_resource type="Script" path="res://scripts/animation/jester_visual.gd" id="8"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]
+size = Vector2(40, 68)
+
+[node name="Player" type="CharacterBody2D" groups=["player"]]
+collision_layer = 2
+collision_mask = 1
+floor_snap_length = 8.0
+script = ExtResource("1")
+config = ExtResource("2")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -34)
+shape = SubResource("RectangleShape2D_body")
+
+[node name="Hammer" type="Node2D" parent="."]
+script = ExtResource("3")
+light_side = ExtResource("4")
+light_up = ExtResource("5")
+air_down = ExtResource("6")
+heavy = ExtResource("7")
+
+[node name="Visual" type="Node2D" parent="."]
+script = ExtResource("8")

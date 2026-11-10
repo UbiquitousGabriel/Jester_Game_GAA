@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="AttackData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/attack_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"heavy"
+damage = 2
+startup = 0.09
+active = 0.12
+recovery = 0.22
+hitbox_offset = Vector2(76, -44)
+hitbox_size = Vector2(150, 110)
+launch_vector = Vector2(1150, -640)
+inherit_velocity = 0.6
+hitstop = 0.09
+shake = 10.0
