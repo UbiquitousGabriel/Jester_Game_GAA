@@ -1,0 +1,585 @@
+{
+ "id": "jester",
+ "canonical_species": "undead skeleton",
+ "canvas": [
+  293,
+  276
+ ],
+ "anchor": [
+  171,
+  226
+ ],
+ "display_scale": 0.5,
+ "frames": {
+  "idle_00.png": {
+   "source": "jester_idle_8frames.png",
+   "sheet_scale": 1.0,
+   "source_box": [
+    22,
+    40,
+    436,
+    409
+   ]
+  },
+  "idle_01.png": {
+   "source": "jester_idle_8frames.png",
+   "sheet_scale": 1.0,
+   "source_box": [
+    474,
+    66,
+    875,
+    406
+   ]
+  },
+  "idle_02.png": {
+   "source": "jester_idle_8frames.png",
+   "sheet_scale": 1.0,
+   "source_box": [
+    910,
+    79,
+    1318,
+    406
+   ]
+  },
+  "idle_03.png": {
+   "source": "jester_idle_8frames.png",
+   "sheet_scale": 1.0,
+   "source_box": [
+    1351,
+    28,
+    1759,
+    405
+   ]
+  },
+  "idle_04.png": {
+   "source": "jester_idle_8frames.png",
+   "sheet_scale": 1.0,
+   "source_box": [
+    20,
+    460,
+    433,
+    848
+   ]
+  },
+  "idle_05.png": {
+   "source": "jester_idle_8frames.png",
+   "sheet_scale": 1.0,
+   "source_box": [
+    462,
+    478,
+    876,
+    849
+   ]
+  },
+  "idle_06.png": {
+   "source": "jester_idle_8frames.png",
+   "sheet_scale": 1.0,
+   "source_box": [
+    910,
+    490,
+    1321,
+    850
+   ]
+  },
+  "idle_07.png": {
+   "source": "jester_idle_8frames.png",
+   "sheet_scale": 1.0,
+   "source_box": [
+    1353,
+    489,
+    1763,
+    851
+   ]
+  },
+  "run_00.png": {
+   "source": "jester_run_8frames.png",
+   "sheet_scale": 0.975,
+   "source_box": [
+    19,
+    52,
+    444,
+    411
+   ]
+  },
+  "run_01.png": {
+   "source": "jester_run_8frames.png",
+   "sheet_scale": 0.975,
+   "source_box": [
+    465,
+    38,
+    886,
+    415
+   ]
+  },
+  "run_02.png": {
+   "source": "jester_run_8frames.png",
+   "sheet_scale": 0.975,
+   "source_box": [
+    915,
+    37,
+    1327,
+    386
+   ]
+  },
+  "run_03.png": {
+   "source": "jester_run_8frames.png",
+   "sheet_scale": 0.975,
+   "source_box": [
+    1362,
+    20,
+    1771,
+    357
+   ]
+  },
+  "run_04.png": {
+   "source": "jester_run_8frames.png",
+   "sheet_scale": 0.975,
+   "source_box": [
+    20,
+    479,
+    439,
+    846
+   ]
+  },
+  "run_05.png": {
+   "source": "jester_run_8frames.png",
+   "sheet_scale": 0.975,
+   "source_box": [
+    466,
+    491,
+    884,
+    844
+   ]
+  },
+  "run_06.png": {
+   "source": "jester_run_8frames.png",
+   "sheet_scale": 0.975,
+   "source_box": [
+    913,
+    499,
+    1326,
+    842
+   ]
+  },
+  "run_07.png": {
+   "source": "jester_run_8frames.png",
+   "sheet_scale": 0.975,
+   "source_box": [
+    1361,
+    499,
+    1770,
+    841
+   ]
+  },
+  "jump_00.png": {
+   "source": "jester_jump_fall_9frames.png",
+   "sheet_scale": 1.105,
+   "source_box": [
+    39,
+    93,
+    403,
+    387
+   ]
+  },
+  "jump_01.png": {
+   "source": "jester_jump_fall_9frames.png",
+   "sheet_scale": 1.105,
+   "source_box": [
+    468,
+    86,
+    831,
+    385
+   ]
+  },
+  "jump_02.png": {
+   "source": "jester_jump_fall_9frames.png",
+   "sheet_scale": 1.105,
+   "source_box": [
+    884,
+    12,
+    1229,
+    341
+   ]
+  },
+  "jump_03.png": {
+   "source": "jester_jump_fall_9frames.png",
+   "sheet_scale": 1.105,
+   "source_box": [
+    65,
+    431,
+    406,
+    737
+   ]
+  },
+  "jump_04.png": {
+   "source": "jester_jump_fall_9frames.png",
+   "sheet_scale": 1.105,
+   "source_box": [
+    470,
+    426,
+    815,
+    710
+   ]
+  },
+  "jump_05.png": {
+   "source": "jester_jump_fall_9frames.png",
+   "sheet_scale": 1.105,
+   "source_box": [
+    877,
+    446,
+    1227,
+    771
+   ]
+  },
+  "jump_06.png": {
+   "source": "jester_jump_fall_9frames.png",
+   "sheet_scale": 1.105,
+   "source_box": [
+    50,
+    852,
+    402,
+    1193
+   ]
+  },
+  "jump_07.png": {
+   "source": "jester_jump_fall_9frames.png",
+   "sheet_scale": 1.105,
+   "source_box": [
+    450,
+    920,
+    811,
+    1214
+   ]
+  },
+  "jump_08.png": {
+   "source": "jester_jump_fall_9frames.png",
+   "sheet_scale": 1.105,
+   "source_box": [
+    873,
+    903,
+    1233,
+    1211
+   ]
+  },
+  "attack_00.png": {
+   "source": "jester_hammer_attack_8frames.png",
+   "sheet_scale": 1.07,
+   "source_box": [
+    28,
+    61,
+    416,
+    394
+   ]
+  },
+  "attack_01.png": {
+   "source": "jester_hammer_attack_8frames.png",
+   "sheet_scale": 1.07,
+   "source_box": [
+    464,
+    59,
+    872,
+    393
+   ]
+  },
+  "attack_02.png": {
+   "source": "jester_hammer_attack_8frames.png",
+   "sheet_scale": 1.07,
+   "source_box": [
+    906,
+    51,
+    1290,
+    393
+   ]
+  },
+  "attack_03.png": {
+   "source": "jester_hammer_attack_8frames.png",
+   "sheet_scale": 1.07,
+   "source_box": [
+    1364,
+    34,
+    1727,
+    392
+   ]
+  },
+  "attack_04.png": {
+   "source": "jester_hammer_attack_8frames.png",
+   "sheet_scale": 1.07,
+   "source_box": [
+    25,
+    468,
+    451,
+    833
+   ]
+  },
+  "attack_05.png": {
+   "source": "jester_hammer_attack_8frames.png",
+   "sheet_scale": 1.07,
+   "source_box": [
+    474,
+    491,
+    880,
+    836
+   ]
+  },
+  "attack_06.png": {
+   "source": "jester_hammer_attack_8frames.png",
+   "sheet_scale": 1.07,
+   "source_box": [
+    906,
+    492,
+    1291,
+    835
+   ]
+  },
+  "attack_07.png": {
+   "source": "jester_hammer_attack_8frames.png",
+   "sheet_scale": 1.07,
+   "source_box": [
+    1350,
+    489,
+    1739,
+    840
+   ]
+  },
+  "slam_00.png": {
+   "source": "jester_ground_slam_8frames.png",
+   "sheet_scale": 1.15,
+   "source_box": [
+    48,
+    103,
+    398,
+    394
+   ]
+  },
+  "slam_01.png": {
+   "source": "jester_ground_slam_8frames.png",
+   "sheet_scale": 1.15,
+   "source_box": [
+    437,
+    109,
+    821,
+    393
+   ]
+  },
+  "slam_02.png": {
+   "source": "jester_ground_slam_8frames.png",
+   "sheet_scale": 1.15,
+   "source_box": [
+    896,
+    23,
+    1237,
+    394
+   ]
+  },
+  "slam_03.png": {
+   "source": "jester_ground_slam_8frames.png",
+   "sheet_scale": 1.15,
+   "source_box": [
+    1288,
+    48,
+    1726,
+    394
+   ]
+  },
+  "slam_04.png": {
+   "source": "jester_ground_slam_8frames.png",
+   "sheet_scale": 1.15,
+   "source_box": [
+    23,
+    476,
+    429,
+    848
+   ]
+  },
+  "slam_05.png": {
+   "source": "jester_ground_slam_8frames.png",
+   "sheet_scale": 1.15,
+   "source_box": [
+    457,
+    529,
+    859,
+    832
+   ]
+  },
+  "slam_06.png": {
+   "source": "jester_ground_slam_8frames.png",
+   "sheet_scale": 1.15,
+   "source_box": [
+    898,
+    532,
+    1334,
+    831
+   ]
+  },
+  "slam_07.png": {
+   "source": "jester_ground_slam_8frames.png",
+   "sheet_scale": 1.15,
+   "source_box": [
+    1367,
+    524,
+    1728,
+    829
+   ]
+  },
+  "pogo_00.png": {
+   "source": "jester_pogo_8frames.png",
+   "sheet_scale": 1.15,
+   "source_box": [
+    76,
+    78,
+    415,
+    397
+   ]
+  },
+  "pogo_01.png": {
+   "source": "jester_pogo_8frames.png",
+   "sheet_scale": 1.15,
+   "source_box": [
+    468,
+    13,
+    772,
+    370
+   ]
+  },
+  "pogo_02.png": {
+   "source": "jester_pogo_8frames.png",
+   "sheet_scale": 1.15,
+   "source_box": [
+    893,
+    4,
+    1213,
+    371
+   ]
+  },
+  "pogo_03.png": {
+   "source": "jester_pogo_8frames.png",
+   "sheet_scale": 1.15,
+   "source_box": [
+    1341,
+    62,
+    1655,
+    446
+   ]
+  },
+  "pogo_04.png": {
+   "source": "jester_pogo_8frames.png",
+   "sheet_scale": 1.15,
+   "source_box": [
+    74,
+    512,
+    400,
+    877
+   ]
+  },
+  "pogo_05.png": {
+   "source": "jester_pogo_8frames.png",
+   "sheet_scale": 1.15,
+   "source_box": [
+    486,
+    545,
+    784,
+    877
+   ]
+  },
+  "pogo_06.png": {
+   "source": "jester_pogo_8frames.png",
+   "sheet_scale": 1.15,
+   "source_box": [
+    925,
+    450,
+    1190,
+    876
+   ]
+  },
+  "pogo_07.png": {
+   "source": "jester_pogo_8frames.png",
+   "sheet_scale": 1.15,
+   "source_box": [
+    1362,
+    453,
+    1712,
+    787
+   ]
+  },
+  "damage_00.png": {
+   "source": "jester_damage_defeat_8frames.png",
+   "sheet_scale": 1.04,
+   "source_box": [
+    27,
+    61,
+    428,
+    409
+   ]
+  },
+  "damage_01.png": {
+   "source": "jester_damage_defeat_8frames.png",
+   "sheet_scale": 1.04,
+   "source_box": [
+    449,
+    48,
+    860,
+    409
+   ]
+  },
+  "damage_02.png": {
+   "source": "jester_damage_defeat_8frames.png",
+   "sheet_scale": 1.04,
+   "source_box": [
+    892,
+    26,
+    1279,
+    404
+   ]
+  },
+  "damage_03.png": {
+   "source": "jester_damage_defeat_8frames.png",
+   "sheet_scale": 1.04,
+   "source_box": [
+    1333,
+    22,
+    1724,
+    392
+   ]
+  },
+  "damage_04.png": {
+   "source": "jester_damage_defeat_8frames.png",
+   "sheet_scale": 1.04,
+   "source_box": [
+    20,
+    516,
+    426,
+    834
+   ]
+  },
+  "damage_05.png": {
+   "source": "jester_damage_defeat_8frames.png",
+   "sheet_scale": 1.04,
+   "source_box": [
+    450,
+    568,
+    873,
+    826
+   ]
+  },
+  "damage_06.png": {
+   "source": "jester_damage_defeat_8frames.png",
+   "sheet_scale": 1.04,
+   "source_box": [
+    892,
+    642,
+    1313,
+    828
+   ]
+  },
+  "damage_07.png": {
+   "source": "jester_damage_defeat_8frames.png",
+   "sheet_scale": 1.04,
+   "source_box": [
+    1334,
+    540,
+    1748,
+    830
+   ]
+  }
+ }
+}

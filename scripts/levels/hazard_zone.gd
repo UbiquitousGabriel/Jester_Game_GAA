@@ -48,6 +48,6 @@ func _draw() -> void:
 
 func _on_body_entered(body: Node2D) -> void:
 	if body is Player:
-		(body as Player).respawn()
+		(body as Player).die()
 	elif body is Enemy:
 		(body as Enemy).defeat()

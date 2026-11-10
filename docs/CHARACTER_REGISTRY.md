@@ -6,7 +6,7 @@ Source: Development Bible 2.0, section 3. Species here is canonical. Asset statu
 
 | Character | Species | Narrative role | Gameplay role | Asset status |
 | --- | --- | --- | --- | --- |
-| The Jester (Jester Revenant) | Rare undead skeleton | Murdered fool seeking revenge; cheerful, mischievous | Primary playable; hammer combat, bouncing, launches | placeholder (in game), concept |
+| The Jester (Jester Revenant) | Rare undead skeleton | Murdered fool seeking revenge; cheerful, mischievous | Primary playable; hammer combat, bouncing, launches | in game: painted sprite frames (idle, run, jump, attacks, pogo, death) |
 | Princess Seraphine | Living human | King's daughter, rebellious mage, complicated bond with the Jester | Proposed DLC playable: Royal Barrage, Starlight Bind, Gravity Bloom, Crown's Grace, Comet Ride | concept |
 | The King | Living human | Main antagonist; pompous, paranoid, violent | Throne-room final boss | concept |
 | Pippet | Living human (proposed) | Runaway page, curious companion | Messenger and route-hint NPC | concept (historical sheet shows a skull face; superseded) |
@@ -20,13 +20,19 @@ Source: Development Bible 2.0, section 3. Species here is canonical. Asset statu
 
 | Enemy | Gameplay role | Asset status |
 | --- | --- | --- |
-| Court Guard / Foot Guard | Shield-and-spear basic melee | placeholder (in game, patrol only) |
+| Court Guard / Foot Guard | Shield-and-spear basic melee | in game: played by the Community Aide stand-in (patrol only) |
 | Royal Arbalest / Crossbowman | Ranged; windup, vulnerable up close | concept |
 | Bulwark | Heavy shield carrier | concept |
 | Royal Captain | Elite duelist with counters | concept |
 | Inquisitor | Caster with seals and zones | concept |
 | Porcelain Courtier | Noble in enchanted porcelain; shatters into porcelain, not bone | concept |
 | Courtier, Noble, Bard, Chef | NPCs, side quests, stage comedy | concept |
+
+## Stand-ins
+
+| Character | Species | Used as | Asset status |
+| --- | --- | --- | --- |
+| Community Aide | Living human (sleepy, duck-print pyjamas) | Temporary Court Guard, by creative-director decision 2026-11-10 | in game: idle, walk, jump frames |
 
 ## Other foes and supporting cast
 

@@ -41,7 +41,14 @@ Status key: done = finished. tested = runs in Godot 4.7.2 and is covered by the 
 
 Carnival Gate level, court guards with attacks, Royal Arbalest, hazards, checkpoints, Executioner miniboss, basic UI and sound.
 
-## Milestone 4: Art integration (open)
+## Milestone 4: Art integration (started)
+
+| Item | Status |
+| --- | --- |
+| Jester sprite pipeline and animation states | tested |
+| Court Guard sprites | open |
+| Painted environment, lighting, parallax | open |
+| Visual effects (dust, impacts, trails) | partly: Jester afterimages, painted swooshes |
 
 ## Milestone 5: Expanded gameplay (open)
 

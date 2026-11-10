@@ -16,11 +16,19 @@ None. The project imports and runs on Godot 4.7.2 with no script errors.
 
 Charge attack scaling, upswing, wall ricochet, floor bounce, coyote time, jump buffering, perfect-vault timing, checkpoints beyond the first, the kill plane.
 
+## Art
+
+- **Scale check needed.** The Jester renders about 58 px tall at 1080p with the default camera (5.4% of screen height, inside the Bible's 5-9% but at the small end). Judge in playtest: raise `sprite_scale` on the Jester's Visual node or `base_zoom` on the camera.
+- The Court Guard is played by the Community Aide stand-in; his sheets have no attack, hit or knocked-down frames, so the lying pose is the landing grimace rotated 90 degrees. Faint red fringing in his hair is in the source art.
+- The level and props are still procedural placeholders, so the painted characters stand out against them.
+- No painted frames exist yet for: dash (uses a run frame), wall contact, taking a non-fatal hit (the hurt frames play only on death).
+- Upswing reuses the overhead slam windup; a dedicated upward swing would read better.
+- The heavy attack launches enemies forward, but its painted swing is an overhead slam into the ground.
+
 ## Observations from the first engine run
 
 - A held jump peaks at 239.6 px against a configured 230 px (fixed-step integration overshoot). Harmless; note it when tuning.
 - A full jump from the start area lands on the one-way platform above. Intended, but it surprised the first version of the smoke test.
-- The Jester's resting hammer overlaps his hat in the placeholder art.
 
 ## Design gaps in the prototype
 

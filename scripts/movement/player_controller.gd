@@ -13,8 +13,11 @@ signal dashed(direction: Vector2)
 signal pogoed
 signal vaulted(perfect: bool)
 signal respawned
+signal died
 
 @export var config: MovementConfig
+## Seconds the defeat animation plays before the player respawns.
+@export var death_time: float = 0.9
 
 ## 1 = facing right, -1 = facing left.
 var facing: int = 1
@@ -33,6 +36,7 @@ var _air_dashes_left: int = 0
 var _vault_cooldown_timer: float = 0.0
 var _time_since_landing: float = 999.0
 var _was_on_floor: bool = false
+var _death_timer: float = 0.0
 
 
 func _ready() -> void:
@@ -44,6 +48,13 @@ func _ready() -> void:
 
 
 func _physics_process(delta: float) -> void:
+	if _death_timer > 0.0:
+		_death_timer -= delta
+		velocity = Vector2.ZERO
+		if _death_timer <= 0.0:
+			respawn()
+		return
+
 	var input_x := Input.get_axis(&"move_left", &"move_right")
 	var input_y := Input.get_axis(&"move_up", &"move_down")
 
@@ -119,7 +130,26 @@ func hammer_vault(input_x: float) -> bool:
 	return perfect
 
 
+func is_dead() -> bool:
+	return _death_timer > 0.0
+
+
+## Hazards and the kill plane call this: play the defeat beat, then respawn.
+func die() -> void:
+	if is_dead():
+		return
+	_end_dash()
+	velocity = Vector2.ZERO
+	_death_timer = maxf(death_time, 0.01)
+	facing_locked = false
+	GameFeel.shake(10.0)
+	GameFeel.hitstop(0.08)
+	ComboTracker.reset()
+	died.emit()
+
+
 func respawn() -> void:
+	_death_timer = 0.0
 	_end_dash()
 	global_position = respawn_position
 	velocity = Vector2.ZERO

@@ -38,12 +38,23 @@ func _run() -> void:
 	# --- Landing ---
 	await _frames(60)
 	_check(player.is_on_floor(), "player settles on the start ground")
+	var visual_sprite := player.get_node_or_null(^"Visual/Sprite") as AnimatedSprite2D
+	_check(
+		visual_sprite != null and visual_sprite.animation == &"idle" and visual_sprite.is_playing(),
+		"standing still plays the painted idle animation"
+	)
+	for anim: StringName in [&"idle", &"run", &"jump_rise", &"attack_side", &"slam", &"pogo_bounce", &"defeat"]:
+		_check(
+			visual_sprite != null and visual_sprite.sprite_frames.get_frame_count(anim) > 0,
+			"sprite frames include '%s'" % anim
+		)
 
 	# --- Running ---
 	var start_x := player.global_position.x
 	Input.action_press(&"move_right")
 	await _frames(45)
 	_check(player.global_position.x > start_x + 150.0, "holding right moves the player right")
+	_check(visual_sprite.animation == &"run", "running plays the run animation")
 	_check(
 		absf(player.velocity.x - player.config.max_run_speed) < 5.0,
 		"run reaches max_run_speed (got %.1f)" % player.velocity.x
@@ -97,12 +108,23 @@ func _run() -> void:
 	await _frames(12)
 	_check(target.health == target.max_health - 1, "light attack damages the guard")
 	_check(target.state == Enemy.State.LAUNCHED, "light attack launches the guard")
+	var guard_sprite := target.get_node_or_null(^"Visual/Sprite") as AnimatedSprite2D
+	_check(
+		guard_sprite != null and guard_sprite.animation == &"airborne",
+		"launched guard shows an airborne pose (got %s)" % (guard_sprite.animation if guard_sprite else "none")
+	)
 	_check(ComboTracker.chain >= 1, "hammer hit registers on the combo tracker")
 	target.queue_free()
 
 	# --- Enemy-to-enemy chain collision ---
 	var base := player.global_position + Vector2(-500.0, 0.0)
 	var projectile := _spawn_guard(level, base)
+	await _frames(3)
+	var idle_sprite := projectile.get_node_or_null(^"Visual/Sprite") as AnimatedSprite2D
+	_check(
+		idle_sprite != null and idle_sprite.animation == &"idle" and idle_sprite.is_playing(),
+		"a standing guard plays the idle animation"
+	)
 	var victim := _spawn_guard(level, base + Vector2(220.0, 0.0))
 	var victim_hits: Array[int] = [0]
 	victim.hit_taken.connect(func(_hit: HitData) -> void: victim_hits[0] += 1)
@@ -172,7 +194,18 @@ func _run() -> void:
 	Input.action_release(&"move_down")
 	_check(counts["pogo"] == pogos_before + 1, "pogo bounces off spikes")
 	_check(counts["respawn"] == respawns_before, "pogo over spikes does not respawn the player")
-	await _frames(120)
+	var waited := 0
+	while not player.is_dead() and waited < 120:
+		await get_tree().physics_frame
+		waited += 1
+	await _frames(4)
+	var sprite := player.get_node(^"Visual/Sprite") as AnimatedSprite2D
+	_check(player.is_dead(), "spikes start the death beat before respawning")
+	_check(
+		sprite != null and (sprite.animation == &"hurt" or sprite.animation == &"defeat"),
+		"death plays the hurt/defeat animation (got %s)" % (sprite.animation if sprite else "none")
+	)
+	await _frames(70)
 	_check(counts["respawn"] == respawns_before + 1, "falling into spikes respawns the player")
 	_check(player.global_position.x < 1500.0, "respawn returns the player to a checkpoint")
 

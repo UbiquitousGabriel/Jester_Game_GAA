@@ -1,0 +1,237 @@
+{
+ "id": "community_aide",
+ "canonical_species": "living human",
+ "role": "stand-in for Court Guard",
+ "canvas": [
+  182,
+  241
+ ],
+ "anchor": [
+  90,
+  231
+ ],
+ "display_scale": 0.5,
+ "sheet_scale": {
+  "idle": 0.5161290322580645,
+  "walk": 0.5292620865139949,
+  "jump": 0.5517241379310345
+ },
+ "frames": {
+  "idle_00.png": {
+   "source": "idle.png",
+   "source_box": [
+    120,
+    4,
+    315,
+    415
+   ]
+  },
+  "idle_01.png": {
+   "source": "idle.png",
+   "source_box": [
+    556,
+    5,
+    759,
+    415
+   ]
+  },
+  "idle_02.png": {
+   "source": "idle.png",
+   "source_box": [
+    988,
+    13,
+    1216,
+    415
+   ]
+  },
+  "idle_03.png": {
+   "source": "idle.png",
+   "source_box": [
+    1438,
+    7,
+    1653,
+    415
+   ]
+  },
+  "idle_04.png": {
+   "source": "idle.png",
+   "source_box": [
+    110,
+    450,
+    324,
+    860
+   ]
+  },
+  "idle_05.png": {
+   "source": "idle.png",
+   "source_box": [
+    552,
+    453,
+    758,
+    860
+   ]
+  },
+  "idle_06.png": {
+   "source": "idle.png",
+   "source_box": [
+    998,
+    450,
+    1197,
+    862
+   ]
+  },
+  "idle_07.png": {
+   "source": "idle.png",
+   "source_box": [
+    1440,
+    447,
+    1641,
+    862
+   ]
+  },
+  "walk_00.png": {
+   "source": "walk.png",
+   "source_box": [
+    43,
+    147,
+    258,
+    549
+   ]
+  },
+  "walk_01.png": {
+   "source": "walk.png",
+   "source_box": [
+    316,
+    146,
+    531,
+    542
+   ]
+  },
+  "walk_02.png": {
+   "source": "walk.png",
+   "source_box": [
+    577,
+    146,
+    803,
+    542
+   ]
+  },
+  "walk_03.png": {
+   "source": "walk.png",
+   "source_box": [
+    832,
+    148,
+    1089,
+    535
+   ]
+  },
+  "walk_04.png": {
+   "source": "walk.png",
+   "source_box": [
+    1110,
+    148,
+    1347,
+    548
+   ]
+  },
+  "walk_05.png": {
+   "source": "walk.png",
+   "source_box": [
+    1399,
+    146,
+    1617,
+    545
+   ]
+  },
+  "walk_06.png": {
+   "source": "walk.png",
+   "source_box": [
+    1667,
+    145,
+    1886,
+    545
+   ]
+  },
+  "walk_07.png": {
+   "source": "walk.png",
+   "source_box": [
+    1932,
+    147,
+    2145,
+    543
+   ]
+  },
+  "jump_00.png": {
+   "source": "jump.png",
+   "source_box": [
+    24,
+    167,
+    229,
+    553
+   ]
+  },
+  "jump_01.png": {
+   "source": "jump.png",
+   "source_box": [
+    268,
+    237,
+    521,
+    549
+   ]
+  },
+  "jump_02.png": {
+   "source": "jump.png",
+   "source_box": [
+    528,
+    106,
+    769,
+    519
+   ]
+  },
+  "jump_03.png": {
+   "source": "jump.png",
+   "source_box": [
+    822,
+    69,
+    1031,
+    411
+   ]
+  },
+  "jump_04.png": {
+   "source": "jump.png",
+   "source_box": [
+    1053,
+    21,
+    1341,
+    337
+   ]
+  },
+  "jump_05.png": {
+   "source": "jump.png",
+   "source_box": [
+    1355,
+    107,
+    1592,
+    451
+   ]
+  },
+  "jump_06.png": {
+   "source": "jump.png",
+   "source_box": [
+    1616,
+    238,
+    1878,
+    551
+   ]
+  },
+  "jump_07.png": {
+   "source": "jump.png",
+   "source_box": [
+    1931,
+    168,
+    2139,
+    553
+   ]
+  }
+ }
+}
