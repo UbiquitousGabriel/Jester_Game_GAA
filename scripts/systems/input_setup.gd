@@ -19,7 +19,10 @@ func _enter_tree() -> void:
 	_bind(&"dash", [KEY_SHIFT], [JOY_BUTTON_RIGHT_SHOULDER])
 	_bind(&"special", [KEY_L], [JOY_BUTTON_LEFT_SHOULDER])
 	_bind(&"pause", [KEY_ESCAPE], [JOY_BUTTON_START])
-	_bind(&"debug_restart", [KEY_R], [JOY_BUTTON_BACK])
+	_bind(&"interact", [KEY_E], [JOY_BUTTON_Y])
+	_bind(&"map", [KEY_M, KEY_TAB], [JOY_BUTTON_BACK])
+	_bind(&"ui_confirm_alt", [KEY_ENTER, KEY_J], [])
+	_bind(&"debug_restart", [KEY_F5], [])
 
 
 func _bind(

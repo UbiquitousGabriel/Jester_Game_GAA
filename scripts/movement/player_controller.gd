@@ -17,6 +17,12 @@ signal died
 signal damaged(amount: int)
 signal health_changed(health: int, max_health: int)
 signal glide_started
+signal wall_kicked(direction: int)
+signal healed
+
+const WORLD_MASK := 1
+const SPECTRAL_MASK := 128
+const ONE_WAY_MASK := 256
 
 @export var config: MovementConfig
 ## Seconds the defeat animation plays before the player respawns.
@@ -38,6 +44,16 @@ signal glide_started
 ## While swinging in the air the Jester hangs: gravity scale and fall cap.
 @export var air_hang_gravity: float = 0.22
 @export var air_hang_fall_cap: float = 110.0
+
+@export_group("Wall Bounce")
+@export var wall_kick_speed: Vector2 = Vector2(540.0, 1050.0)
+## Seconds after a kick before input can steer back toward the wall.
+@export var wall_kick_lock: float = 0.14
+@export var wall_slide_speed: float = 260.0
+
+## When false (e.g. the movement playground), every ability is available and
+## charms are ignored; the castle sets it true so GameState gates abilities.
+var use_progression: bool = false
 
 ## 1 = facing right, -1 = facing left.
 var facing: int = 1
@@ -64,6 +80,9 @@ var _gliding: bool = false
 var _glide_left: float = 0.0
 var _air_hang: bool = false
 var _full_death: bool = true
+var _wall_kick_timer: float = 0.0
+var _drop_timer: float = 0.0
+var _ghosting: bool = false
 
 
 func _ready() -> void:
@@ -73,6 +92,7 @@ func _ready() -> void:
 	_air_dashes_left = config.air_dashes
 	_glide_left = glide_budget
 	health = max_health
+	collision_mask = WORLD_MASK | SPECTRAL_MASK | ONE_WAY_MASK
 	add_to_group(&"player")
 
 
@@ -102,9 +122,19 @@ func _physics_process(delta: float) -> void:
 	_update_timers(delta)
 	_update_facing(input_x)
 
+	_wall_kick_timer = maxf(_wall_kick_timer - delta, 0.0)
+	_drop_timer = maxf(_drop_timer - delta, 0.0)
+	if _drop_timer <= 0.0 and collision_mask & ONE_WAY_MASK == 0:
+		collision_mask |= ONE_WAY_MASK
 	if Input.is_action_just_pressed(&"jump"):
-		_jump_buffer_timer = config.jump_buffer_time
-		_try_start_glide()
+		if input_y > 0.5 and is_on_floor() and _standing_on_one_way():
+			# Drop through a ledge instead of jumping.
+			collision_mask &= ~ONE_WAY_MASK
+			_drop_timer = 0.22
+			position.y += 2.0
+		elif not _try_wall_kick():
+			_jump_buffer_timer = config.jump_buffer_time
+			_try_start_glide()
 	if _gliding:
 		_glide_left -= delta
 		if not Input.is_action_pressed(&"jump") or _glide_left <= 0.0 or is_on_floor():
@@ -115,8 +145,14 @@ func _physics_process(delta: float) -> void:
 	if is_dashing():
 		_process_dash(delta)
 	else:
+		if _wall_kick_timer > 0.0:
+			input_x = signf(velocity.x)
 		_apply_horizontal(input_x, delta)
 		_apply_gravity(delta)
+		# Wall bounce owners slide slowly down walls they push into.
+		if has_ability(&"wallkick") and is_on_wall_only() and velocity.y > wall_slide_speed \
+				and absf(input_x) > 0.3 and signf(input_x) == -get_wall_normal().x:
+			velocity.y = wall_slide_speed
 	_try_jump()
 	_apply_jump_cut()
 
@@ -135,6 +171,39 @@ func is_dashing() -> bool:
 	return _dash_timer > 0.0
 
 
+## Abilities are gated by GameState in the castle and always on elsewhere.
+func has_ability(id: StringName) -> bool:
+	return not use_progression or GameState.has(id)
+
+
+func has_charm(id: StringName) -> bool:
+	return use_progression and GameState.has_charm(id)
+
+
+func is_ghosting() -> bool:
+	return _ghosting
+
+
+func heal_full() -> void:
+	health = max_health
+	health_changed.emit(health, max_health)
+	healed.emit()
+
+
+func heal(amount: int) -> void:
+	health = mini(health + amount, max_health)
+	health_changed.emit(health, max_health)
+	healed.emit()
+
+
+## Re-reads the heart total from GameState (after a heart piece).
+func refresh_max_health() -> void:
+	if use_progression:
+		max_health = GameState.max_hearts()
+	health = mini(health, max_health)
+	health_changed.emit(health, max_health)
+
+
 func time_since_landing() -> float:
 	return _time_since_landing
 
@@ -142,7 +211,7 @@ func time_since_landing() -> float:
 ## Bounce upward off a pogo target. Restores the air dash and air control.
 func pogo_bounce(speed: float) -> void:
 	_end_dash()
-	velocity.y = -speed
+	velocity.y = -speed * (1.1 if has_charm(&"rubber_nose") else 1.0)
 	_jump_cut_available = false
 	_coyote_timer = 0.0
 	_air_dashes_left = config.air_dashes
@@ -181,7 +250,7 @@ func air_hit_bounce(speed: float) -> void:
 
 ## Enemy attacks. Returns true when the damage landed.
 func take_damage(amount: int, source_position: Vector2) -> bool:
-	if is_dead() or _invulnerable_timer > 0.0 or amount <= 0:
+	if is_dead() or _invulnerable_timer > 0.0 or amount <= 0 or _ghosting:
 		return false
 	_apply_damage(amount)
 	if health <= 0:
@@ -195,7 +264,7 @@ func take_damage(amount: int, source_position: Vector2) -> bool:
 		away = -float(facing)
 	velocity = Vector2(away * hurt_knockback.x, hurt_knockback.y)
 	_hurt_timer = hurt_time
-	_invulnerable_timer = invulnerable_time
+	_invulnerable_timer = invulnerable_time * (1.6 if has_charm(&"thick_skull") else 1.0)
 	GameFeel.hitstop(0.07)
 	GameFeel.shake(8.0)
 	return true
@@ -211,7 +280,7 @@ func hazard_hit() -> void:
 
 
 func can_vault() -> bool:
-	return is_on_floor() and _vault_cooldown_timer <= 0.0 and not is_dashing()
+	return has_ability(&"vault") and is_on_floor() and _vault_cooldown_timer <= 0.0 and not is_dashing()
 
 
 ## Plant the hammer and launch. Neutral input goes straight up; holding a
@@ -283,6 +352,8 @@ func _apply_damage(amount: int) -> void:
 
 func _try_start_glide() -> void:
 	# A second press in the air (not a buffered or coyote jump).
+	if not has_ability(&"glide"):
+		return
 	if is_on_floor() or _coyote_timer > 0.0 or _gliding or _glide_left <= 0.1 or is_dashing():
 		return
 	_gliding = true
@@ -356,7 +427,7 @@ func _try_jump() -> void:
 		var dash_velocity_x := velocity.x
 		_end_dash()
 		velocity.x = dash_velocity_x
-	velocity.y = -config.jump_velocity()
+	velocity.y = -config.jump_velocity() * (1.058 if has_charm(&"spring_heels") else 1.0)
 	_jump_buffer_timer = 0.0
 	_coyote_timer = 0.0
 	_jump_cut_available = true
@@ -394,7 +465,10 @@ func _try_dash(input_x: float, input_y: float) -> void:
 	var speed_along := maxf(velocity.dot(direction), 0.0)
 	_dash_current_speed = maxf(config.dash_speed, speed_along + config.dash_momentum_bonus)
 	_dash_direction = direction
-	_dash_timer = config.dash_duration
+	_dash_timer = config.dash_duration * (1.35 if has_charm(&"cartwheel") else 1.0)
+	if has_ability(&"ghost_dash"):
+		_ghosting = true
+		collision_mask &= ~SPECTRAL_MASK
 	_dash_cooldown_timer = config.dash_cooldown
 	_jump_cut_available = false
 	velocity = direction * _dash_current_speed
@@ -411,6 +485,10 @@ func _process_dash(delta: float) -> void:
 
 
 func _end_dash() -> void:
+	if _ghosting:
+		_ghosting = false
+		collision_mask |= SPECTRAL_MASK
+		_eject_from_spectral()
 	if _dash_timer <= 0.0 and _dash_current_speed <= 0.0:
 		return
 	_dash_timer = 0.0
@@ -432,3 +510,45 @@ func _post_move(pre_move_velocity: Vector2) -> void:
 			_time_since_landing = 0.0
 			landed.emit(pre_move_velocity.y)
 	_was_on_floor = on_floor
+
+
+func _try_wall_kick() -> bool:
+	if not has_ability(&"wallkick") or is_on_floor() or _coyote_timer > 0.0:
+		return false
+	var side := _wall_side()
+	if side == 0:
+		return false
+	if is_dashing():
+		_end_dash()
+	_gliding = false
+	velocity = Vector2(-float(side) * wall_kick_speed.x, -wall_kick_speed.y)
+	facing = -side
+	_wall_kick_timer = wall_kick_lock
+	_air_dashes_left = config.air_dashes
+	_jump_cut_available = true
+	wall_kicked.emit(-side)
+	return true
+
+
+## -1 wall on the left, 1 on the right, 0 none (checks a few pixels out).
+func _wall_side() -> int:
+	for side: int in [1, -1]:
+		if test_move(global_transform, Vector2(float(side) * 14.0, 0.0)):
+			return side
+	return 0
+
+
+func _standing_on_one_way() -> bool:
+	for i: int in get_slide_collision_count():
+		var collider := get_slide_collision(i).get_collider() as Node
+		if collider != null and collider.is_in_group(&"one_way"):
+			return true
+	return false
+
+
+## After a phantom step ends inside a spectral barrier, push out along the dash.
+func _eject_from_spectral() -> void:
+	for i: int in 40:
+		if not test_move(global_transform, Vector2.ZERO):
+			return
+		global_position += _dash_direction * 8.0 if _dash_direction != Vector2.ZERO else Vector2(float(facing) * 8.0, 0.0)

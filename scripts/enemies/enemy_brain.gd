@@ -9,6 +9,10 @@ enum Phase { NONE, WINDUP, ACTIVE, RECOVER }
 const PLAYER_MASK: int = 2
 
 var phase: Phase = Phase.NONE
+## Damage dealt by touching the enemy while it is active (0 = harmless).
+var contact_damage: int = 1
+## Area difficulty, 0..5. Brains speed up and hit harder with it.
+var tier: int = 0
 var _phase_time: float = 0.0
 var _phase_length: float = 0.0
 
@@ -21,6 +25,17 @@ func tick(_enemy: Enemy, _delta: float) -> void:
 ## True while hits should not interrupt the current move.
 func has_armor() -> bool:
 	return false
+
+
+## Return true to shrug off a hit completely (shields).
+func blocks(_enemy: Enemy, _hit: HitData) -> bool:
+	return false
+
+
+## Called after each active physics step: touching the Jester hurts.
+func touch(enemy: Enemy) -> void:
+	if contact_damage > 0:
+		_hit_player(enemy, enemy.body_rect().grow(-6.0), contact_damage)
 
 
 ## A hit landed: abandon the current move.
@@ -67,3 +82,34 @@ func _hit_player(enemy: Enemy, rect: Rect2, damage: int) -> bool:
 		if player != null:
 			return player.take_damage(damage, enemy.global_position)
 	return false
+
+
+func _face(enemy: Enemy, target: Vector2) -> void:
+	enemy.patrol_direction = 1 if target.x > enemy.global_position.x else -1
+
+
+func _sees(enemy: Enemy, player: Player, range_x: float, range_y: float) -> bool:
+	if player == null:
+		return false
+	var d := player.global_position - enemy.global_position
+	return absf(d.x) < range_x and absf(d.y) < range_y
+
+
+## Walk along the floor without stepping off ledges or into walls.
+func _walk(enemy: Enemy, speed: float) -> void:
+	if enemy.is_on_floor() and (enemy.is_on_wall() or not enemy.call(&"_has_floor_ahead")):
+		enemy.velocity.x = 0.0
+		return
+	enemy.velocity.x = float(enemy.patrol_direction) * speed
+
+
+func _patrol(enemy: Enemy, speed: float) -> void:
+	if enemy.is_on_floor() and (enemy.is_on_wall() or not enemy.call(&"_has_floor_ahead")):
+		enemy.patrol_direction = -enemy.patrol_direction
+	enemy.velocity.x = float(enemy.patrol_direction) * speed
+
+
+func _shoot(enemy: Enemy, from: Vector2, velocity: Vector2, spec: Dictionary = {}) -> Projectile:
+	var p := Projectile.create(from, velocity, spec)
+	enemy.get_parent().add_child(p)
+	return p

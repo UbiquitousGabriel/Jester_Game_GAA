@@ -45,6 +45,7 @@ var _bounds: Rect2 = Rect2()
 var _has_bounds: bool = false
 var _last_shake_msec: int = 0
 var _rng := RandomNumberGenerator.new()
+var _punch: float = 0.0
 
 
 func _ready() -> void:
@@ -74,6 +75,22 @@ func set_bounds(bounds: Rect2) -> void:
 	limit_top = int(bounds.position.y)
 	limit_right = int(bounds.end.x)
 	limit_bottom = int(bounds.end.y)
+
+
+## Jump straight to the target (room changes, respawns).
+func snap() -> void:
+	if _target == null:
+		return
+	_lookahead = Vector2.ZERO
+	_focus = _target.global_position + Vector2(0.0, vertical_offset)
+	_clamp_focus_to_bounds()
+	global_position = _focus
+	reset_smoothing()
+
+
+## Brief zoom-in kick for big impacts (decays on its own).
+func punch(amount: float) -> void:
+	_punch = minf(_punch + amount, 0.12)
 
 
 func add_shake(strength: float) -> void:
@@ -127,7 +144,8 @@ func _update_zoom(speed: float, delta: float) -> void:
 		var t := clampf((speed - zoom_out_start_speed) / span, 0.0, 1.0)
 		goal = lerpf(base_zoom, fast_zoom, t)
 	_current_zoom = lerpf(_current_zoom, goal, _blend(zoom_smoothing, delta))
-	zoom = Vector2(_current_zoom, _current_zoom)
+	_punch = move_toward(_punch, 0.0, delta * 0.5)
+	zoom = Vector2.ONE * (_current_zoom + _punch)
 
 
 func _clamp_focus_to_bounds() -> void:

@@ -68,7 +68,7 @@ var _glide_cooldowns: Dictionary[int, float] = {}
 ## Air strings started since the last landing or connecting hit. Only the
 ## first ones hang in the air, so whiffing cannot hover forever.
 var _air_strings: int = 0
-const HANGING_STRINGS := 2
+const HANGING_STRINGS := 1
 
 
 func _ready() -> void:
@@ -211,6 +211,8 @@ func _process_charging(delta: float) -> void:
 	var power := lerpf(1.0, charge_launch_multiplier, charge_ratio)
 	var bonus := roundi(float(charge_damage_bonus) * charge_ratio)
 	_begin(heavy, power, bonus)
+	if charge_ratio >= 0.95 and _player.is_on_floor() and _player.has_ability(&"slam"):
+		_shockwave()
 
 
 func _try_chain_air_combo() -> bool:
@@ -237,12 +239,12 @@ func _begin(attack: AttackData, power: float, bonus_damage: int) -> void:
 		var dir := Input.get_axis(&"move_left", &"move_right")
 		if absf(dir) > 0.3 and not _player.facing_locked:
 			_player.facing = int(signf(dir))
-		if attack.lunge > 0.0:
+		if attack.lunge > 0.0 and _air_strings <= HANGING_STRINGS:
 			var push := float(_player.facing) * attack.lunge
 			var vx := _player.velocity.x + push
 			if absf(_player.velocity.x) < max_lunge_speed:
 				_player.velocity.x = clampf(vx, -max_lunge_speed, max_lunge_speed)
-		if attack.hang and _player.velocity.y > 0.0:
+		if attack.hang and _player.velocity.y > 0.0 and _air_strings <= HANGING_STRINGS:
 			_player.velocity.y *= 0.25
 	_player.facing_locked = true
 	attack_started.emit(attack)
@@ -291,8 +293,11 @@ func _apply_hit(target: Node) -> void:
 	var hit := HitData.new()
 	hit.attack_id = current_attack.id
 	hit.damage = current_attack.damage + _bonus_damage
+	if _player.has_charm(&"heavy_head") and (charge_ratio >= 0.7 and current_attack == heavy or current_attack.id == &"air_finisher"):
+		hit.damage += 1
 	hit.source = _player
 	hit.chain_depth = 0
+	hit.charge = charge_ratio if current_attack == heavy else 0.0
 	var launch := Vector2(
 		current_attack.launch_vector.x * float(_player.facing), current_attack.launch_vector.y
 	)
@@ -304,7 +309,7 @@ func _apply_hit(target: Node) -> void:
 	GameFeel.shake(current_attack.shake * _power)
 	ComboTracker.register_hit()
 	if current_attack.air_bounce > 0.0 and node_is_fighter(target):
-		_player.air_hit_bounce(current_attack.air_bounce)
+		_player.air_hit_bounce(current_attack.air_bounce * (1.2 if _player.has_charm(&"juggler_gloves") else 1.0))
 		_air_strings = 0
 	hit_landed.emit(target, hit)
 
@@ -358,3 +363,16 @@ func _tick_glide_spin(delta: float) -> void:
 		ComboTracker.register_hit()
 		_player.air_hit_bounce(glide_spin.air_bounce)
 		hit_landed.emit(node, hit)
+
+
+## Cracking Slam: a full charge on the ground sends a shockwave both ways.
+func _shockwave() -> void:
+	var at := _player.global_position
+	GameFeel.shake(16.0)
+	GameFeel.hitstop(0.06)
+	Audio.sfx(&"slam")
+	Vfx.dust(_player.get_parent(), at + Vector2(-120.0, 0.0), 1.8)
+	Vfx.dust(_player.get_parent(), at + Vector2(120.0, 0.0), 1.8)
+	Vfx.ring(_player.get_parent(), at + Vector2(0.0, -20.0), Color(1.0, 0.8, 0.45), 2.4)
+	Combat.area_damage(self, Rect2(at + Vector2(-340.0, -110.0), Vector2(680.0, 120.0)), 2,
+		Vector2(700.0, -900.0), _player)

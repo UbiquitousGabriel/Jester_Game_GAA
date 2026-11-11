@@ -9,6 +9,7 @@ const SMOKE: Texture2D = preload("res://assets/environments/pack/fx_smoke_small.
 const STAR: Texture2D = preload("res://assets/effects/star.png")
 const SPARK: Texture2D = preload("res://assets/effects/spark.png")
 const SOFT: Texture2D = preload("res://assets/effects/soft_circle.png")
+const RING: Texture2D = preload("res://assets/effects/ring.png")
 
 const Z_FX := 6
 
@@ -45,6 +46,63 @@ static func dust(parent: Node, feet: Vector2, size: float = 1.0) -> void:
 static func cloud(parent: Node, at: Vector2, size: float = 1.0) -> void:
 	var puff := _sprite(parent, CLOUD, at, Color(1.0, 1.0, 1.0, 0.9), 0.38 * size, false)
 	_pop(puff, 0.45, 0.6 * size)
+
+
+## Expanding shockwave ring.
+static func ring(parent: Node, at: Vector2, color: Color = Color(1.0, 0.9, 0.6), size: float = 1.0) -> void:
+	var r := _sprite(parent, RING, at, Color(color, 0.9), 0.15 * size, true)
+	var tween := r.create_tween().set_parallel()
+	tween.tween_property(r, "scale", Vector2.ONE * 1.1 * size, 0.35).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
+	tween.tween_property(r, "modulate:a", 0.0, 0.35)
+	tween.chain().tween_callback(r.queue_free)
+
+
+## Coloured burst of sparks (pickups, enemy deaths, boss phase changes).
+static func burst(parent: Node, at: Vector2, color: Color, amount: int = 18, power: float = 1.0) -> void:
+	var flash := _sprite(parent, SOFT, at, Color(color, 0.8), 0.6 * power, true)
+	_fade(flash, 0.25, 2.0 * power)
+	var p_dir := Vector2.UP
+	_particles(parent, at, SPARK, amount, 0.5, Vector2(300.0, 900.0) * power, 0.08, 0.2, p_dir,
+		color, true)
+	var stars_parent := parent
+	_particles(stars_parent, at, STAR, amount / 3 + 1, 0.8, Vector2(200.0, 600.0) * power, 0.2, 0.4,
+		p_dir, Color.WHITE, false, Vector2(0.0, 1200.0))
+
+
+## Big enemy-death pop: flash, cloud and confetti stars.
+static func defeat(parent: Node, at: Vector2, size: float = 1.0) -> void:
+	cloud(parent, at, size)
+	burst(parent, at, Color(1.0, 0.8, 0.5), 14, size)
+
+
+## Thin glowing trail segment left behind by fast movement.
+static func afterimage(parent: Node, source: CanvasItem, at: Vector2, color: Color) -> void:
+	if source == null:
+		return
+	var ghost := Sprite2D.new()
+	var sprite := source as Sprite2D
+	if sprite == null:
+		return
+	ghost.texture = sprite.texture
+	ghost.region_enabled = sprite.region_enabled
+	ghost.region_rect = sprite.region_rect
+	ghost.hframes = sprite.hframes
+	ghost.vframes = sprite.vframes
+	ghost.frame = sprite.frame
+	ghost.centered = sprite.centered
+	ghost.offset = sprite.offset
+	ghost.flip_h = sprite.flip_h
+	ghost.global_transform = sprite.global_transform
+	ghost.modulate = Color(color, 0.5)
+	ghost.z_index = 1
+	var material := CanvasItemMaterial.new()
+	material.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+	ghost.material = material
+	parent.add_child(ghost)
+	ghost.global_transform = sprite.global_transform
+	var tween := ghost.create_tween()
+	tween.tween_property(ghost, "modulate:a", 0.0, 0.22)
+	tween.tween_callback(ghost.queue_free)
 
 
 # --- Internals -------------------------------------------------------------------

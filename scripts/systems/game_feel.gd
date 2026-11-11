@@ -9,6 +9,8 @@ signal shake_requested(strength: float)
 const HITSTOP_TIME_SCALE: float = 0.05
 const MAX_HITSTOP: float = 0.25
 
+## Player setting: 0 turns screen shake off, 1 is full strength.
+var shake_scale: float = 1.0
 ## Tests switch this off so simulated frames are not slowed down.
 var hitstop_enabled: bool = true
 
@@ -30,8 +32,17 @@ func hitstop(duration: float) -> void:
 
 
 func shake(strength: float) -> void:
-	if strength > 0.0:
-		shake_requested.emit(strength)
+	if strength > 0.0 and shake_scale > 0.0:
+		shake_requested.emit(strength * shake_scale)
+
+
+## Brief slow motion (boss kills, big chains). Real-time duration.
+func slow_motion(scale: float, duration: float) -> void:
+	if not hitstop_enabled:
+		return
+	Engine.time_scale = scale
+	_in_hitstop = true
+	_hitstop_until_msec = maxi(_hitstop_until_msec, Time.get_ticks_msec() + int(duration * 1000.0))
 
 
 func _process(_delta: float) -> void:

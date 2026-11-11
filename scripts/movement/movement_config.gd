@@ -45,7 +45,7 @@ extends Resource
 @export var pogo_enemy_bounce_speed: float = 1280.0
 
 @export_group("Hammer Vault")
-@export var vault_up_speed: float = 1300.0
+@export var vault_up_speed: float = 1800.0
 @export var vault_forward_up_speed: float = 900.0
 @export var vault_forward_boost: float = 620.0
 ## Vaulting within this many seconds of landing counts as a perfect vault.
