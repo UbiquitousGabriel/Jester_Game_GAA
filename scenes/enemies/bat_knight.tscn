@@ -1,0 +1,43 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/enemies/enemy.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/enemies/bat_brain.gd" id="2"]
+[ext_resource type="Script" path="res://scripts/animation/enemy_sprite_visual.gd" id="3"]
+[ext_resource type="SpriteFrames" path="res://resources/animation/bat_knight_frames.tres" id="4"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_body"]
+radius = 30.0
+
+[node name="BatKnight" type="CharacterBody2D" groups=["enemy"]]
+collision_layer = 4
+collision_mask = 1
+script = ExtResource("1")
+max_health = 3
+mass = 0.7
+flying = true
+air_recover_time = 0.4
+launch_gravity = 1150.0
+launch_threshold = 200.0
+stagger_time = 0.3
+knockdown_time = 0.5
+recover_time = 0.2
+defeat_fade_time = 1.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_body")
+
+[node name="Brain" type="Node" parent="."]
+script = ExtResource("2")
+
+[node name="Visual" type="Node2D" parent="."]
+script = ExtResource("3")
+frames = ExtResource("4")
+anchor = Vector2(252, 164)
+pivot_height = 0.0
+idle_anim = &"fly"
+move_anim = &"glide"
+knocked_down_frame = 2
+windup = [&"swoop", [0, 1]]
+active = [&"swoop", [2, 3]]
+recover = [&"swoop", [4, 5]]
+move_threshold = 300.0

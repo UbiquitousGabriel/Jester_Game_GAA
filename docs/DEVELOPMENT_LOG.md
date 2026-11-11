@@ -93,3 +93,26 @@ The creative director supplied seven generated sprite sheets (57 frames).
 - `guard_visual.gd` rewritten to drive his sprite from the Enemy state machine; hit flash, tumble and lying pose kept.
 - Smoke test: 41 passed, 0 failed (2 new guard sprite checks). Showcase at 1080p inspected.
 - Git: source sheets are now normal Git files (LFS uploads unreachable from build sessions). The earlier local commit on this branch still holds LFS pointers; pushing needs the creative director's decision (see conversation).
+
+## 2026-11-10: Environment, enemies and air combat (`art/carnival-gate-environment`)
+
+### Done
+
+- Tileset pack (creative director): `tools/art/slice_tileset.py` cuts 74 assets from the presentation sheet (field keying, glow keying for lights, rebuilt ink, 2x). Terrain, ledges (3-slice), banners, drapery, lanterns, props, spikes, spring and effects now come from the pack.
+- Generated sky, parallax backdrops (castle, far and near carnival), lamp posts, checkpoint flags and gate sign (`tools/art/build_environment.py`); 2D lights and drifting embers.
+- Effects: hit bursts, sparks, stars, landing dust, crate clouds (`scripts/effects/vfx.gd`).
+- Jester aerial sheet added to the Jester pipeline (skull-anchored, scale x2.0 measured).
+- Enemy pipeline `tools/art/process_enemy_sheets.py` (row detection, feet or skull anchors, shadow-line removal). Mace knight and bat knight scenes with `EnemyBrain` behaviours and a data-driven sprite visual.
+- Player health, damage, knockback, invulnerability, hearts HUD; spikes cost a heart.
+- Air combat: 3-hit air combo, air hang, hit bounce, hammer twirl glide with spin hits.
+- Project-wide mipmap import default.
+
+### Test results
+
+| Command | Result |
+| --- | --- |
+| `godot --headless --path . --import` | Pass |
+| `tests/smoke_test.tscn` | 59 passed, 0 failed (18 new) |
+| Showcase rendered at 1920x1080, frames inspected | Pass |
+| `tools/lint.sh` | Pass |
+| Human playtest | **Not run** |

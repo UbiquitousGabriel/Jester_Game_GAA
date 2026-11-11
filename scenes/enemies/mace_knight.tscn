@@ -1,0 +1,40 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/enemies/enemy.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/enemies/knight_brain.gd" id="2"]
+[ext_resource type="Script" path="res://scripts/animation/enemy_sprite_visual.gd" id="3"]
+[ext_resource type="SpriteFrames" path="res://resources/animation/mace_knight_frames.tres" id="4"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]
+size = Vector2(62, 92)
+
+[node name="MaceKnight" type="CharacterBody2D" groups=["enemy"]]
+collision_layer = 4
+collision_mask = 1
+script = ExtResource("1")
+max_health = 8
+mass = 2.2
+patrol_speed = 60.0
+launch_threshold = 420.0
+ricochet_count = 1
+stagger_time = 0.35
+knockdown_time = 1.1
+defeat_fade_time = 1.1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -46)
+shape = SubResource("RectangleShape2D_body")
+
+[node name="Brain" type="Node" parent="."]
+script = ExtResource("2")
+
+[node name="Visual" type="Node2D" parent="."]
+script = ExtResource("3")
+frames = ExtResource("4")
+anchor = Vector2(242, 279)
+pivot_height = 56.0
+knocked_down_frame = 5
+windup = [&"windup", [0, 1, 2, 3]]
+active = [&"slam", [0, 1]]
+recover = [&"slam", [2, 3]]
+spin_rate = 0.5

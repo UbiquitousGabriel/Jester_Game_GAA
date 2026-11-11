@@ -8,6 +8,8 @@ extends Node
 
 const PLAYGROUND: PackedScene = preload("res://scenes/levels/movement_playground.tscn")
 const FOOT_GUARD: PackedScene = preload("res://scenes/enemies/foot_guard.tscn")
+const MACE_KNIGHT: PackedScene = preload("res://scenes/enemies/mace_knight.tscn")
+const BAT_KNIGHT: PackedScene = preload("res://scenes/enemies/bat_knight.tscn")
 
 var _passed: int = 0
 var _failures: Array[String] = []
@@ -239,6 +241,162 @@ func _run() -> void:
 		not is_instance_valid(doomed) or doomed.state == Enemy.State.DEFEATED,
 		"enemy launched into spikes is defeated"
 	)
+
+	await _run_air_and_enemies(level, player)
+
+
+func _run_air_and_enemies(level: Node2D, player: Player) -> void:
+	var hammer := player.get_node(^"Hammer") as Hammer
+	for node: Node in get_tree().get_nodes_in_group(&"enemy"):
+		node.queue_free()
+	await _reset_player(player, Vector2(300.0, -4.0))
+
+	# --- Air combo chains three swings and hangs in the air ---
+	var ids: Array[StringName] = []
+	hammer.attack_started.connect(func(a: AttackData) -> void: ids.append(a.id))
+	player.global_position = Vector2(300.0, -500.0)
+	player.velocity = Vector2.ZERO
+	await _frames(2)
+	var start_y := player.global_position.y
+	for i: int in 3:
+		await _tap(&"attack_light", 2)
+		await _frames(12)
+	await _frames(20)
+	_check(ids == [&"air_1", &"air_2", &"air_finisher"],
+		"three air presses chain air_1, air_2, air_finisher (got %s)" % [ids])
+	var fell := player.global_position.y - start_y
+	_check(fell < 200.0, "air combo hangs the Jester in the air (fell %.0f px in ~0.9 s)" % fell)
+	await _land(player)
+
+	# --- Air hit bounces the Jester upward ---
+	var target := _spawn_guard(level, Vector2(600.0, -380.0))
+	target.max_health = 99
+	target.health = 99
+	player.global_position = Vector2(540.0, -380.0)
+	player.velocity = Vector2(0.0, 300.0)
+	player.facing = 1
+	await _frames(2)
+	await _tap(&"attack_light", 2)
+	await _frames(10)
+	_check(player.velocity.y < -150.0, "an air hit bounces the Jester up (vy %.0f)" % player.velocity.y)
+	target.queue_free()
+	await _land(player)
+
+	# --- Hammer twirl glide ---
+	await _tap(&"jump", 14)
+	await _frames(8)
+	Input.action_press(&"jump")
+	await _frames(20)
+	_check(player.is_gliding(), "a second jump press in the air starts the glide")
+	_check(player.velocity.y <= player.glide_fall_speed + 1.0,
+		"gliding caps the fall speed (vy %.0f)" % player.velocity.y)
+	Input.action_release(&"jump")
+	await _land(player)
+
+	# --- Mace knight slams, is armoured in windup, and dies ---
+	await _reset_player(player, Vector2(300.0, -4.0))
+	var health_before := player.health
+	var knight := MACE_KNIGHT.instantiate() as Enemy
+	level.add_child(knight)
+	knight.global_position = Vector2(390.0, -4.0)
+	var waited := 0
+	while player.health == health_before and waited < 180:
+		await get_tree().physics_frame
+		waited += 1
+	_check(player.health == health_before - 2, "the mace knight's slam deals 2 damage (health %d)" % player.health)
+	_check(player.is_hurt() or player.is_invulnerable(), "being hit knocks back and grants invulnerability")
+
+	await _reset_player(player, Vector2(300.0, -4.0))
+	await _frames(40)
+	waited = 0
+	while knight.brain.phase != EnemyBrain.Phase.WINDUP and waited < 180:
+		await get_tree().physics_frame
+		waited += 1
+	var poke := HitData.new()
+	poke.damage = 1
+	poke.launch_velocity = Vector2(900.0, -300.0)
+	knight.take_hit(poke)
+	_check(knight.state == Enemy.State.GROUNDED and knight.brain.phase == EnemyBrain.Phase.WINDUP,
+		"hits during the knight's windup land without interrupting it")
+	var big := HitData.new()
+	big.damage = 20
+	big.launch_velocity = Vector2(300.0, -200.0)
+	await _frames(60)
+	knight.take_hit(big)
+	waited = 0
+	while is_instance_valid(knight) and knight.state != Enemy.State.DEFEATED and waited < 240:
+		await get_tree().physics_frame
+		waited += 1
+	_check(is_instance_valid(knight) and knight.state == Enemy.State.DEFEATED, "a knight at zero health is defeated")
+	var death_sprite := knight.get_node(^"Visual/Sprite") as AnimatedSprite2D
+	_check(death_sprite.animation == &"death", "the defeated knight plays its death animation")
+	await _frames(100)
+	_check(not is_instance_valid(knight), "the defeated knight is removed after its death animation")
+
+	# --- Bat knight flies, dives at the Jester, recovers in mid-air ---
+	await _reset_player(player, Vector2(300.0, -4.0))
+	var bat := BAT_KNIGHT.instantiate() as Enemy
+	level.add_child(bat)
+	bat.global_position = Vector2(650.0, -300.0)
+	await _frames(40)
+	_check(bat.global_position.y < -200.0, "the bat stays airborne (y %.0f)" % bat.global_position.y)
+	health_before = player.health
+	waited = 0
+	while player.health == health_before and waited < 420:
+		await get_tree().physics_frame
+		waited += 1
+	_check(player.health == health_before - 1, "the bat's dive deals 1 damage (after %d frames)" % waited)
+	await _frames(70)
+	var swat := HitData.new()
+	swat.damage = 1
+	swat.launch_velocity = Vector2(350.0, -350.0)
+	bat.global_position = Vector2(560.0, -420.0)
+	bat.take_hit(swat)
+	await _frames(70)
+	_check(bat.state == Enemy.State.GROUNDED or bat.state == Enemy.State.STAGGERED,
+		"a launched bat catches itself in mid-air (state %d)" % bat.state)
+	_check(bat.global_position.y < -80.0, "the recovered bat is still in the air (y %.0f)" % bat.global_position.y)
+	var finish := HitData.new()
+	finish.damage = 10
+	finish.launch_velocity = Vector2(200.0, -100.0)
+	bat.take_hit(finish)
+	waited = 0
+	while is_instance_valid(bat) and bat.state != Enemy.State.DEFEATED and waited < 300:
+		await get_tree().physics_frame
+		waited += 1
+	_check(is_instance_valid(bat) and bat.state == Enemy.State.DEFEATED, "a bat at zero health falls and is defeated")
+	if is_instance_valid(bat):
+		bat.queue_free()
+
+	# --- Running out of health: death, then a full refill at the checkpoint ---
+	await _reset_player(player, Vector2(300.0, -4.0))
+	player.health = 1
+	player.take_damage(1, player.global_position + Vector2(50.0, 0.0))
+	_check(player.is_dead(), "losing the last heart kills the Jester")
+	await _frames(80)
+	_check(not player.is_dead() and player.health == player.max_health, "respawning refills health")
+
+
+func _reset_player(player: Player, at: Vector2) -> void:
+	player.respawn()
+	player.global_position = at
+	player.velocity = Vector2.ZERO
+	player.set("_invulnerable_timer", 0.0)
+	await _frames(20)
+
+
+func _land(player: Player) -> void:
+	var waited := 0
+	while not player.is_on_floor() and waited < 240:
+		await get_tree().physics_frame
+		waited += 1
+	await _frames(10)
+
+
+func _tap(action: StringName, frames: int) -> void:
+	Input.action_press(action)
+	await _frames(frames)
+	Input.action_release(action)
 
 
 func _spawn_guard(level: Node, at: Vector2) -> Enemy:

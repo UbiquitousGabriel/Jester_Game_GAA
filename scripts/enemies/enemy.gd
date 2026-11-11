@@ -28,6 +28,13 @@ const ENEMY_MASK: int = 4
 ## Heavier enemies launch less far and hit others harder.
 @export var mass: float = 1.0
 
+@export_group("Flight")
+## Flyers ignore gravity while active and recover in mid-air after a launch.
+@export var flying: bool = false
+## Seconds a launched flyer tumbles before it can catch itself.
+@export var air_recover_time: float = 0.45
+@export var air_recover_speed: float = 280.0
+
 @export_group("Patrol")
 @export var patrol_enabled: bool = true
 @export var patrol_speed: float = 90.0
@@ -71,15 +78,19 @@ var _ricochets_left: int = 0
 var _floor_bounced: bool = false
 var _pair_cooldowns: Dictionary[int, float] = {}
 var _collision_shape: CollisionShape2D = null
+## Optional behaviour child (EnemyBrain). Without one the enemy patrols.
+var brain: EnemyBrain = null
+var _launch_time: float = 0.0
 
 
 func _ready() -> void:
 	health = max_health
 	add_to_group(&"enemy")
 	for child: Node in get_children():
-		if child is CollisionShape2D:
+		if child is CollisionShape2D and _collision_shape == null:
 			_collision_shape = child as CollisionShape2D
-			break
+		elif child is EnemyBrain:
+			brain = child as EnemyBrain
 
 
 func _physics_process(delta: float) -> void:
@@ -116,6 +127,13 @@ func take_hit(hit: HitData) -> void:
 	_chain_depth = hit.chain_depth
 	hit_taken.emit(hit)
 
+	# Armoured moves (a knight's windup) take damage without flinching.
+	if brain != null and brain.has_armor() and health > 0:
+		GameFeel.shake(3.0)
+		return
+	if brain != null:
+		brain.interrupt()
+
 	var launch := (hit.launch_velocity / maxf(mass, 0.1)).limit_length(max_launch_speed)
 	if launch.length() < launch_threshold and health > 0:
 		velocity.x = launch.x
@@ -134,6 +152,7 @@ func launch_with(launch_velocity: Vector2) -> void:
 		velocity.y = -200.0
 	_ricochets_left = ricochet_count
 	_floor_bounced = false
+	_launch_time = 0.0
 	_enter(State.LAUNCHED, 0.0)
 	launched.emit(velocity)
 
@@ -157,6 +176,12 @@ func _enter(new_state: State, duration: float) -> void:
 
 
 func _process_grounded(delta: float) -> void:
+	if brain != null:
+		if not flying and not is_on_floor():
+			velocity.y += ground_gravity * delta
+		brain.tick(self, delta)
+		move_and_slide()
+		return
 	if not is_on_floor():
 		velocity.y += ground_gravity * delta
 	elif patrol_enabled:
@@ -170,7 +195,10 @@ func _process_grounded(delta: float) -> void:
 
 ## Shared by STAGGERED, KNOCKED_DOWN and RECOVER: slide to a stop, then advance.
 func _process_resting(delta: float, next_state: State, next_duration: float) -> void:
-	if not is_on_floor():
+	if flying and state == State.STAGGERED:
+		# Caught itself in the air: drift to a stop.
+		velocity = velocity.move_toward(Vector2.ZERO, 3200.0 * delta)
+	elif not is_on_floor():
 		velocity.y += ground_gravity * delta
 	velocity.x = move_toward(velocity.x, 0.0, ground_friction * delta)
 	move_and_slide()
@@ -180,7 +208,15 @@ func _process_resting(delta: float, next_state: State, next_duration: float) -> 
 
 
 func _process_launched(delta: float) -> void:
+	_launch_time += delta
 	velocity.y += launch_gravity * delta
+	# Flyers catch themselves after a short tumble: sooner if slow, and
+	# always by 1.8x air_recover_time so a launch never becomes a long fall.
+	var caught := _launch_time >= air_recover_time and velocity.length() < air_recover_speed
+	if flying and health > 0 and (caught or _launch_time >= air_recover_time * 1.8):
+		_chain_depth = 0
+		_enter(State.STAGGERED, stagger_time)
+		return
 	var pre_move_velocity := velocity
 	move_and_slide()
 
@@ -221,7 +257,8 @@ func _process_defeated(delta: float) -> void:
 	velocity.x = move_toward(velocity.x, 0.0, ground_friction * delta)
 	move_and_slide()
 	_state_timer -= delta
-	modulate.a = clampf(_state_timer / maxf(defeat_fade_time, 0.001), 0.0, 1.0)
+	# The death animation plays first; fade only in the last third.
+	modulate.a = clampf(_state_timer / maxf(defeat_fade_time * 0.33, 0.001), 0.0, 1.0)
 	if _state_timer <= 0.0:
 		queue_free()
 

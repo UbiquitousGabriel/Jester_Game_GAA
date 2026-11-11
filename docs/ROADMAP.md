@@ -37,6 +37,17 @@ Status key: done = finished. tested = runs in Godot 4.7.2 and is covered by the 
 | Hit-stop and screen shake | untested |
 | Breakable props, hazards | tested |
 
+## Milestone 2.5: Air combat and enemy roster (tested)
+
+| Item | Status |
+| --- | --- |
+| Player health, knockback, invulnerability, hearts HUD | tested |
+| Air combo with hang, hit bounce, air-dash refresh | tested |
+| Hammer twirl glide with spin hits | tested |
+| Mace knight (brain, armour, slam, death) | tested |
+| Bat knight (flight, dive, mid-air recovery, death) | tested |
+| Tileset pack terrain, ledges, props, spikes, spring, effects | untested by eye only |
+
 ## Milestone 3: Vertical slice (open)
 
 Carnival Gate level, court guards with attacks, Royal Arbalest, hazards, checkpoints, Executioner miniboss, basic UI and sound.

@@ -1,0 +1,240 @@
+{
+ "id": "bat_knight",
+ "canvas": [
+  379,
+  313
+ ],
+ "anchor": [
+  252,
+  164
+ ],
+ "scale": 1.2765957446808511,
+ "anchor_mode": "skull",
+ "source": "assets/source/enemies/bat_knight/bat_knight_sheet.png",
+ "frames": {
+  "fly_00.png": {
+   "source_box": [
+    15,
+    19,
+    250,
+    185
+   ]
+  },
+  "fly_01.png": {
+   "source_box": [
+    282,
+    19,
+    498,
+    185
+   ]
+  },
+  "fly_02.png": {
+   "source_box": [
+    545,
+    32,
+    754,
+    185
+   ]
+  },
+  "fly_03.png": {
+   "source_box": [
+    796,
+    23,
+    1023,
+    175
+   ]
+  },
+  "fly_04.png": {
+   "source_box": [
+    1058,
+    24,
+    1276,
+    179
+   ]
+  },
+  "fly_05.png": {
+   "source_box": [
+    1300,
+    20,
+    1525,
+    180
+   ]
+  },
+  "glide_00.png": {
+   "source_box": [
+    27,
+    214,
+    222,
+    386
+   ]
+  },
+  "glide_01.png": {
+   "source_box": [
+    286,
+    213,
+    475,
+    374
+   ]
+  },
+  "glide_02.png": {
+   "source_box": [
+    526,
+    209,
+    720,
+    388
+   ]
+  },
+  "glide_03.png": {
+   "source_box": [
+    786,
+    208,
+    991,
+    388
+   ]
+  },
+  "glide_04.png": {
+   "source_box": [
+    1050,
+    209,
+    1251,
+    381
+   ]
+  },
+  "glide_05.png": {
+   "source_box": [
+    1301,
+    229,
+    1505,
+    378
+   ]
+  },
+  "attack_00.png": {
+   "source_box": [
+    15,
+    418,
+    233,
+    575
+   ]
+  },
+  "attack_01.png": {
+   "source_box": [
+    259,
+    418,
+    497,
+    575
+   ]
+  },
+  "attack_02.png": {
+   "source_box": [
+    514,
+    413,
+    769,
+    598
+   ]
+  },
+  "attack_03.png": {
+   "source_box": [
+    787,
+    423,
+    1061,
+    600
+   ]
+  },
+  "attack_04.png": {
+   "source_box": [
+    1048,
+    427,
+    1260,
+    581
+   ]
+  },
+  "attack_05.png": {
+   "source_box": [
+    1295,
+    416,
+    1521,
+    572
+   ]
+  },
+  "hurt_00.png": {
+   "source_box": [
+    15,
+    630,
+    208,
+    783
+   ]
+  },
+  "hurt_01.png": {
+   "source_box": [
+    257,
+    619,
+    465,
+    779
+   ]
+  },
+  "hurt_02.png": {
+   "source_box": [
+    496,
+    640,
+    711,
+    792
+   ]
+  },
+  "hurt_03.png": {
+   "source_box": [
+    750,
+    647,
+    950,
+    795
+   ]
+  },
+  "death_00.png": {
+   "source_box": [
+    25,
+    827,
+    252,
+    993
+   ]
+  },
+  "death_01.png": {
+   "source_box": [
+    293,
+    853,
+    494,
+    1002
+   ]
+  },
+  "death_02.png": {
+   "source_box": [
+    534,
+    871,
+    759,
+    999
+   ]
+  },
+  "death_03.png": {
+   "source_box": [
+    787,
+    864,
+    1026,
+    998
+   ]
+  },
+  "death_04.png": {
+   "source_box": [
+    1050,
+    852,
+    1279,
+    1000
+   ]
+  },
+  "death_05.png": {
+   "source_box": [
+    1309,
+    884,
+    1504,
+    998
+   ]
+  }
+ }
+}

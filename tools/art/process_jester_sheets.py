@@ -56,7 +56,16 @@ SHEET_SCALE = {
     "slam": 1.15,
     "pogo": 1.15,
     "damage": 1.04,
+    # Drawn at half resolution: upright recovery poses are 175 px tall
+    # against 350 px on the idle sheet, and skull widths agree.
+    "aerial": 2.0,
 }
+
+# Sheets whose poses spin through the air: anchored on the skull centre
+# (found as the cream region with eye-socket holes) rather than on the feet.
+# The skull is placed at its idle height above the feet so the physics
+# origin stays consistent between ground and air animations.
+SKULL_ANCHORED = {"aerial"}
 
 # sheet file, grid (cols, rows), loop-sheet (drop detached effects), row-baseline
 SHEETS = {
@@ -67,6 +76,7 @@ SHEETS = {
     "slam": ("jester_ground_slam_8frames.png", (4, 2), False, False),
     "pogo": ("jester_pogo_8frames.png", (4, 2), False, False),
     "damage": ("jester_damage_defeat_8frames.png", (4, 2), False, False),
+    "aerial": ("jester_aerial_combo_24frames.png", (8, 3), False, False),
 }
 
 # Godot animations built from the frames. Phase-driven animations (attacks,
@@ -90,11 +100,19 @@ ANIMATIONS = {
     "vault": ("pogo", [4, 5, 6], 16.0, False),
     "hurt": ("damage", [1, 2, 3], 14.0, False),
     "defeat": ("damage", [4, 5, 6, 7], 7.0, False),
+    # Aerial combo (phase-driven) and the hammer twirl glide.
+    "air_swing_1": ("aerial", [0, 1, 8, 9, 10], 0.0, False),
+    "air_swing_2": ("aerial", [1, 2, 13, 14, 15], 0.0, False),
+    "air_finisher": ("aerial", [3, 4, 5, 6, 7, 11, 12, 16, 17], 0.0, False),
+    "air_spin": ("aerial", [3, 4, 5, 6, 7, 11, 12], 22.0, True),
+    "air_ready": ("aerial", [18, 19, 20, 21, 22, 23], 12.0, True),
 }
 
 
-def key_background(rgb: np.ndarray) -> np.ndarray:
-    """Returns a boolean mask of background pixels."""
+def key_background(rgb: np.ndarray, min_hole: int = 60) -> np.ndarray:
+    """Returns a boolean mask of background pixels. Enclosed holes of at
+    least `min_hole` pixels count as background (tiny ones need no checker
+    texture test: they are too small to show the pattern)."""
     lo = rgb.min(axis=2)
     spread = rgb.max(axis=2) - lo
     candidate = (lo >= BG_MIN) & (spread <= BG_SPREAD)
@@ -107,7 +125,10 @@ def key_background(rgb: np.ndarray) -> np.ndarray:
     keep[border] = True
     # Enclosed checker holes: large enough and genuinely checker-textured.
     for index in range(1, count + 1):
-        if keep[index] or sizes[index - 1] < 60:
+        if keep[index] or sizes[index - 1] < min_hole:
+            continue
+        if sizes[index - 1] < 60:
+            keep[index] = True
             continue
         values = lo[labels == index]
         if values.max() - values.min() >= 3:
@@ -154,6 +175,26 @@ def skull_centre_x(rgba: np.ndarray, body: np.ndarray) -> float:
     sizes = ndimage.sum(cream, labels, range(1, count + 1))
     biggest = labels == (int(np.argmax(sizes)) + 1)
     return float(np.nonzero(biggest)[1].mean())
+
+
+def skull_centre(rgba: np.ndarray, body: np.ndarray) -> tuple[float, float] | None:
+    """Centre of the skull: the cream region enclosing eye-socket holes."""
+    r, g, b = rgba[..., 0], rgba[..., 1], rgba[..., 2]
+    cream = body & (r > 215) & (g > 195) & (b > 165) & (r - b > 8) & (r - b < 70)
+    labels, count = ndimage.label(cream)
+    best, best_holes = 0, 0
+    for index, sl in enumerate(ndimage.find_objects(labels), 1):
+        region = labels[sl] == index
+        holes = int(ndimage.binary_fill_holes(region).sum() - region.sum())
+        if region.sum() > 300 and holes > best_holes:
+            best, best_holes = index, holes
+    if best == 0:
+        return None
+    ys, xs = np.nonzero(ndimage.binary_fill_holes(labels == best))
+    return float(xs.mean()), float(ys.mean())
+
+
+IDLE_SKULL_HEIGHT = 0.0  # set in main(): skull centre height above feet on idle
 
 
 def extract_sheet(name: str, spec: tuple) -> list[dict]:
@@ -209,6 +250,17 @@ def extract_sheet(name: str, spec: tuple) -> list[dict]:
             }
         )
 
+    if name in SKULL_ANCHORED:
+        lift = IDLE_SKULL_HEIGHT / SHEET_SCALE[name]
+        for f in frames:
+            body = f["image"][..., 3] > 128
+            centre = skull_centre(f["image"], body)
+            if centre is None:
+                ys, xs = np.nonzero(body)
+                centre = (float(xs.mean()), float(ys.mean()))
+            f["anchor_x"] = centre[0]
+            f["foot_y"] = centre[1] + lift
+
     if spec[3]:  # shared baseline per row keeps the run cycle's bob
         for row in {f["row"] for f in frames}:
             row_frames = [f for f in frames if f["row"] == row]
@@ -229,6 +281,14 @@ def downscale(img: Image.Image, factor: float) -> Image.Image:
 
 
 def main() -> None:
+    global IDLE_SKULL_HEIGHT
+    idle = extract_sheet("idle", SHEETS["idle"])
+    heights = []
+    for f in idle:
+        centre = skull_centre(f["image"], f["image"][..., 3] > 128)
+        if centre is not None:
+            heights.append(f["foot_y"] - centre[1])
+    IDLE_SKULL_HEIGHT = float(np.median(heights))
     all_frames = {name: extract_sheet(name, spec) for name, spec in SHEETS.items()}
 
     # Shared canvas: union of every frame's extent around its anchor.

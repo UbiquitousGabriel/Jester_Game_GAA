@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="AttackData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/attack_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"glide_spin"
+damage = 1
+hitbox_offset = Vector2(0, -44)
+hitbox_size = Vector2(160, 140)
+launch_vector = Vector2(560, -660)
+inherit_velocity = 0.4
+air_bounce = 300.0
+hitstop = 0.03
+shake = 3.0

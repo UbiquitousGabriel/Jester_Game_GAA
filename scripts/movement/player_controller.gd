@@ -14,10 +14,30 @@ signal pogoed
 signal vaulted(perfect: bool)
 signal respawned
 signal died
+signal damaged(amount: int)
+signal health_changed(health: int, max_health: int)
+signal glide_started
 
 @export var config: MovementConfig
 ## Seconds the defeat animation plays before the player respawns.
 @export var death_time: float = 0.9
+
+@export_group("Health")
+@export var max_health: int = 5
+## Seconds of invulnerability after taking damage.
+@export var invulnerable_time: float = 1.1
+## Seconds of lost control while being knocked back.
+@export var hurt_time: float = 0.32
+@export var hurt_knockback: Vector2 = Vector2(460.0, -440.0)
+
+@export_group("Air")
+## Hammer twirl: second jump press in the air. Slows the fall, keeps speed.
+@export var glide_fall_speed: float = 150.0
+@export var glide_lift: float = 260.0
+@export var glide_budget: float = 1.2
+## While swinging in the air the Jester hangs: gravity scale and fall cap.
+@export var air_hang_gravity: float = 0.22
+@export var air_hang_fall_cap: float = 110.0
 
 ## 1 = facing right, -1 = facing left.
 var facing: int = 1
@@ -37,6 +57,13 @@ var _vault_cooldown_timer: float = 0.0
 var _time_since_landing: float = 999.0
 var _was_on_floor: bool = false
 var _death_timer: float = 0.0
+var health: int = 0
+var _invulnerable_timer: float = 0.0
+var _hurt_timer: float = 0.0
+var _gliding: bool = false
+var _glide_left: float = 0.0
+var _air_hang: bool = false
+var _full_death: bool = true
 
 
 func _ready() -> void:
@@ -44,6 +71,8 @@ func _ready() -> void:
 		config = MovementConfig.new()
 	respawn_position = global_position
 	_air_dashes_left = config.air_dashes
+	_glide_left = glide_budget
+	health = max_health
 	add_to_group(&"player")
 
 
@@ -57,12 +86,29 @@ func _physics_process(delta: float) -> void:
 
 	var input_x := Input.get_axis(&"move_left", &"move_right")
 	var input_y := Input.get_axis(&"move_up", &"move_down")
+	_invulnerable_timer = maxf(_invulnerable_timer - delta, 0.0)
+
+	if _hurt_timer > 0.0:
+		# Knocked back: no control, just physics.
+		_hurt_timer -= delta
+		_update_timers(delta)
+		velocity.y += config.fall_gravity() * delta
+		velocity.x = move_toward(velocity.x, 0.0, config.air_deceleration * delta)
+		var hurt_velocity := velocity
+		move_and_slide()
+		_post_move(hurt_velocity)
+		return
 
 	_update_timers(delta)
 	_update_facing(input_x)
 
 	if Input.is_action_just_pressed(&"jump"):
 		_jump_buffer_timer = config.jump_buffer_time
+		_try_start_glide()
+	if _gliding:
+		_glide_left -= delta
+		if not Input.is_action_pressed(&"jump") or _glide_left <= 0.0 or is_on_floor():
+			_gliding = false
 	if Input.is_action_just_pressed(&"dash"):
 		_try_dash(input_x, input_y)
 
@@ -100,7 +146,68 @@ func pogo_bounce(speed: float) -> void:
 	_jump_cut_available = false
 	_coyote_timer = 0.0
 	_air_dashes_left = config.air_dashes
+	_glide_left = glide_budget
+	_gliding = false
 	pogoed.emit()
+
+
+func is_gliding() -> bool:
+	return _gliding
+
+
+func is_hurt() -> bool:
+	return _hurt_timer > 0.0
+
+
+func is_invulnerable() -> bool:
+	return _invulnerable_timer > 0.0
+
+
+## The hammer sets this while swinging in the air: the Jester hangs in place.
+func set_air_hang(hang: bool) -> void:
+	_air_hang = hang and not is_on_floor()
+
+
+## A connecting air hit bounces the Jester up and refreshes his air tools,
+## so chaining hits keeps him airborne.
+func air_hit_bounce(speed: float) -> void:
+	if is_on_floor():
+		return
+	velocity.y = minf(velocity.y, -speed)
+	_air_dashes_left = config.air_dashes
+	_glide_left = glide_budget
+	_jump_cut_available = false
+
+
+## Enemy attacks. Returns true when the damage landed.
+func take_damage(amount: int, source_position: Vector2) -> bool:
+	if is_dead() or _invulnerable_timer > 0.0 or amount <= 0:
+		return false
+	_apply_damage(amount)
+	if health <= 0:
+		_full_death = true
+		die()
+		return true
+	_end_dash()
+	_gliding = false
+	var away := signf(global_position.x - source_position.x)
+	if away == 0.0:
+		away = -float(facing)
+	velocity = Vector2(away * hurt_knockback.x, hurt_knockback.y)
+	_hurt_timer = hurt_time
+	_invulnerable_timer = invulnerable_time
+	GameFeel.hitstop(0.07)
+	GameFeel.shake(8.0)
+	return true
+
+
+## Spikes and the kill plane: lose a heart and go back to the checkpoint.
+func hazard_hit() -> void:
+	if is_dead():
+		return
+	_apply_damage(1)
+	_full_death = health <= 0
+	die()
 
 
 func can_vault() -> bool:
@@ -150,6 +257,13 @@ func die() -> void:
 
 func respawn() -> void:
 	_death_timer = 0.0
+	_hurt_timer = 0.0
+	_gliding = false
+	if _full_death or health <= 0:
+		health = max_health
+		health_changed.emit(health, max_health)
+	_full_death = true
+	_invulnerable_timer = invulnerable_time
 	_end_dash()
 	global_position = respawn_position
 	velocity = Vector2.ZERO
@@ -159,6 +273,22 @@ func respawn() -> void:
 
 
 # --- Internals ----------------------------------------------------------------
+
+
+func _apply_damage(amount: int) -> void:
+	health = maxi(health - amount, 0)
+	damaged.emit(amount)
+	health_changed.emit(health, max_health)
+
+
+func _try_start_glide() -> void:
+	# A second press in the air (not a buffered or coyote jump).
+	if is_on_floor() or _coyote_timer > 0.0 or _gliding or _glide_left <= 0.1 or is_dashing():
+		return
+	_gliding = true
+	velocity.y = minf(velocity.y, -glide_lift)
+	_jump_cut_available = false
+	glide_started.emit()
 
 
 func _update_timers(delta: float) -> void:
@@ -209,7 +339,13 @@ func _apply_gravity(delta: float) -> void:
 	if is_on_floor():
 		return
 	var gravity := config.rise_gravity() if velocity.y < 0.0 else config.fall_gravity()
+	if _air_hang:
+		gravity *= air_hang_gravity
 	velocity.y += gravity * delta
+	if _air_hang:
+		velocity.y = minf(velocity.y, air_hang_fall_cap)
+	elif _gliding:
+		velocity.y = minf(velocity.y, glide_fall_speed)
 
 
 func _try_jump() -> void:
@@ -289,6 +425,9 @@ func _post_move(pre_move_velocity: Vector2) -> void:
 	var on_floor := is_on_floor()
 	if on_floor:
 		_air_dashes_left = config.air_dashes
+		_glide_left = glide_budget
+		_gliding = false
+		_air_hang = false
 		if not _was_on_floor:
 			_time_since_landing = 0.0
 			landed.emit(pre_move_velocity.y)

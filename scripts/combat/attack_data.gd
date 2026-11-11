@@ -23,6 +23,15 @@ extends Resource
 ## When true, connecting with a target or pogo surface bounces the attacker.
 @export var bounces_attacker: bool = false
 
+@export_group("Air")
+## Upward speed given to the attacker when this move connects in the air
+## (0 = none). Chaining air hits keeps the Jester airborne.
+@export var air_bounce: float = 0.0
+## Forward speed added at the start of the move when airborne.
+@export var lunge: float = 0.0
+## The attacker hangs in the air while this move plays.
+@export var hang: bool = false
+
 @export_group("Feedback")
 @export var hitstop: float = 0.06
 @export var shake: float = 6.0

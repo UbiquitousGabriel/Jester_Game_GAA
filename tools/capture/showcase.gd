@@ -5,6 +5,8 @@ extends Node
 
 const PLAYGROUND: PackedScene = preload("res://scenes/levels/movement_playground.tscn")
 const FOOT_GUARD: PackedScene = preload("res://scenes/enemies/foot_guard.tscn")
+const MACE_KNIGHT: PackedScene = preload("res://scenes/enemies/mace_knight.tscn")
+const BAT_KNIGHT: PackedScene = preload("res://scenes/enemies/bat_knight.tscn")
 
 var _level: Node2D
 var _player: Player
@@ -66,6 +68,43 @@ func _run() -> void:
 	await _tap(&"attack_heavy", 0.05)
 	Input.action_release(&"move_down")
 	await _wait(1.4)
+
+	# --- Aerial combat ---
+	_player.global_position = Vector2(4000.0, -4.0)
+	_player.velocity = Vector2.ZERO
+	var knight := MACE_KNIGHT.instantiate() as Enemy
+	_level.add_child(knight)
+	knight.global_position = Vector2(4500.0, -4.0)
+	var bat := BAT_KNIGHT.instantiate() as Enemy
+	_level.add_child(bat)
+	bat.global_position = Vector2(4250.0, -280.0)
+	var bat2 := BAT_KNIGHT.instantiate() as Enemy
+	_level.add_child(bat2)
+	bat2.global_position = Vector2(4450.0, -420.0)
+	await _wait(0.6)
+	Input.action_press(&"move_right")
+	await _tap(&"jump", 0.25)
+	for i: int in 3:
+		await _tap(&"attack_light", 0.04)
+		await _wait(0.2)
+	await _wait(0.2)
+	Input.action_press(&"jump")
+	await _wait(0.9)  # twirl glide forward through the air
+	Input.action_release(&"jump")
+	Input.action_release(&"move_right")
+	await _wait(0.4)
+	await _tap(&"dash", 0.05)
+	await _wait(0.3)
+	for i: int in 3:
+		await _tap(&"attack_light", 0.04)
+		await _wait(0.2)
+	await _wait(1.2)
+	# Stand in front of the knight and take the slam.
+	_player.global_position = knight.global_position + Vector2(-100.0, 0.0)
+	_player.velocity = Vector2.ZERO
+	await _wait(2.0)
+	await _tap(&"attack_heavy", 0.6)
+	await _wait(1.6)
 
 	# Walk into the spike pit.
 	_player.global_position = Vector2(1400.0, -4.0)

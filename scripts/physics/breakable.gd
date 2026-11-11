@@ -7,6 +7,7 @@ signal smashed(impact_velocity: Vector2)
 
 const WORLD_LAYER: int = 1
 const PROP_LAYER: int = 64
+const CRATE: Texture2D = preload("res://assets/environments/pack/crate_large.png")
 
 var size: Vector2 = Vector2(64.0, 64.0)
 var color: Color = Color(0.72, 0.5, 0.28)
@@ -33,19 +34,12 @@ func _ready() -> void:
 	collider.shape = shape
 	collider.position = Vector2(0.0, -size.y * 0.5)
 	add_child(collider)
-
-
-func _draw() -> void:
-	var rect := Rect2(Vector2(-size.x * 0.5, -size.y), size)
-	draw_rect(rect, color)
-	draw_rect(rect, color.darkened(0.45), false, 4.0)
-	draw_line(rect.position, rect.end, color.darkened(0.3), 4.0)
-	draw_line(
-		Vector2(rect.end.x, rect.position.y),
-		Vector2(rect.position.x, rect.end.y),
-		color.darkened(0.3),
-		4.0
-	)
+	var sprite := Sprite2D.new()
+	sprite.texture = CRATE
+	sprite.centered = false
+	sprite.scale = size / CRATE.get_size()
+	sprite.position = Vector2(-size.x * 0.5, -size.y)
+	add_child(sprite)
 
 
 ## Hammer hits arrive here.
@@ -65,4 +59,5 @@ func smash(impact_velocity: Vector2) -> void:
 		global_position + Vector2(0.0, -size.y * 0.5), color, impact_velocity
 	)
 	get_parent().add_child(burst)
+	Vfx.cloud(get_parent(), global_position + Vector2(0.0, -size.y * 0.5), 1.0)
 	queue_free()
