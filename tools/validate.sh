@@ -13,7 +13,13 @@ echo "== Godot version =="
 echo "== Import (builds the class cache) =="
 "$GODOT" --headless --path "$ROOT" --import
 
-echo "== Smoke test =="
+echo "== Compile every script =="
+"$GODOT" --headless --path "$ROOT" res://tests/load_all.tscn
+
+echo "== Smoke test (movement and combat) =="
 "$GODOT" --headless --path "$ROOT" res://tests/smoke_test.tscn
+
+echo "== World test (all rooms, doors, bosses, menus) =="
+"$GODOT" --headless --path "$ROOT" res://tests/world_test.tscn
 
 echo "All validation steps passed."

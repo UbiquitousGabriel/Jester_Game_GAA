@@ -116,3 +116,17 @@ The creative director supplied seven generated sprite sheets (57 frames).
 | Showcase rendered at 1920x1080, frames inspected | Pass |
 | `tools/lint.sh` | Pass |
 | Human playtest | **Not run** |
+
+## Full game build (feature/full-game)
+
+Everything except final art, in one pass.
+
+- **World.** `tools/world/build_world.py` generates the interconnected castle (seed 1337): 6 areas, 131 rooms on 160 cells, ability gates in order (glide, vault, slam, wall bounce, phantom step), 11 shrines, 6 shops, 24 heart pieces, 42 joke pages, 37 bell caches. It validates reachability and writes `scripts/world/world_data.gd`, a map PNG and a report.
+- **Runtime.** `Game` loads one room at a time in world coordinates, so doors never move the Jester; pits return him to the last safe ground for a heart; a full defeat returns him to the last shrine. Bosses lock the arena.
+- **Progression.** `GameState` autoload: abilities, charms (3 slots), heart pieces, bells, collectibles, map, bosses, shrine, play time; 3 JSON save slots.
+- **Enemies.** 13 kinds: the guard, mace knight and bat (sprites) plus arbalest, bulwark, springer, hound, wisp, balloon clown, siege cannon, inquisitor, porcelain courtier and clockwork knight (labelled shapes). Shots can be parried back.
+- **Bosses.** Ringmaster, Executioner, Mourning Bell, Acrobat Twins, Clockwork Colossus, the King; each with 3 health phases.
+- **UI.** Title with save slots, pause, map, charms, shop, shrine, settings (volumes, shake, fullscreen), dialogue, item cards, area titles, boss bar, intro and ending.
+- **Audio.** `tools/audio/synth.py` synthesises 69 effects, 11 music tracks and 4 ambience loops; `Audio` autoload crossfades music and pools effects.
+- **Lighting and juice.** Per-area mood (canvas tint, sky, back wall, motes, music), player light, lanterns, candelabras, torches, camera punch, slow motion on boss kills, hurt flash, chain banners, telegraphs.
+- **Tests.** `tests/load_all.tscn` compiles every script; `tests/world_test.tscn` builds all rooms and plays doors, pits, death, pickups, every boss and every menu (169 checks). The smoke test still passes (59).

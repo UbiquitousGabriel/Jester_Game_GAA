@@ -10,3 +10,5 @@ var launch_velocity: Vector2 = Vector2.ZERO
 var source: Node = null
 ## 0 for a direct hammer hit, +1 for each enemy-to-enemy transfer after it.
 var chain_depth: int = 0
+## 0..1 charge of a heavy swing (0 for everything else).
+var charge: float = 0.0

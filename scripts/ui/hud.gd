@@ -15,11 +15,16 @@ const HELP_TEXT := (
 )
 
 @export var player_path: NodePath
+## The movement playground shows the control reminder; the castle shows bells.
+@export var show_help: bool = true
 
 var _player: Player = null
 var _chain_label: Label = null
 var _info_label: Label = null
 var _hearts: HBoxContainer = null
+var _help: Label = null
+var _bells: Label = null
+var _bell_shown: int = -1
 
 
 func _ready() -> void:
@@ -31,10 +36,14 @@ func _ready() -> void:
 	_hearts.position = Vector2(32.0, 26.0)
 	add_child(_hearts)
 
-	var help := _make_label(22, CREAM)
-	help.text = HELP_TEXT
-	help.position = Vector2(34.0, 96.0)
-	help.modulate.a = 0.85
+	_help = _make_label(22, CREAM)
+	_help.text = HELP_TEXT
+	_help.position = Vector2(34.0, 96.0)
+	_help.modulate.a = 0.85
+
+	_bells = _make_label(34, GOLD)
+	_bells.position = Vector2(40.0, 92.0)
+	_bells.visible = false
 
 	_info_label = _make_label(28, CREAM)
 	_info_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
@@ -54,8 +63,19 @@ func _ready() -> void:
 
 	ComboTracker.chain_changed.connect(_on_chain_changed)
 	if _player != null:
+		bind_player(_player)
+
+
+## The castle spawns the player in code and binds it here.
+func bind_player(player: Player) -> void:
+	_player = player
+	show_help = not player.use_progression
+	_help.visible = show_help
+	_bells.visible = not show_help
+	_info_label.visible = show_help
+	if not _player.health_changed.is_connected(_on_health_changed):
 		_player.health_changed.connect(_on_health_changed)
-		_on_health_changed(_player.health, _player.max_health)
+	_on_health_changed(_player.health, _player.max_health)
 
 
 func _process(_delta: float) -> void:
@@ -64,6 +84,13 @@ func _process(_delta: float) -> void:
 	_info_label.text = "Speed %d\nBest chain x%d" % [
 		int(_player.velocity.length()), ComboTracker.best_chain
 	]
+	if _bells.visible and _bell_shown != GameState.bells:
+		var up := GameState.bells > _bell_shown and _bell_shown >= 0
+		_bell_shown = GameState.bells
+		_bells.text = "♪ %d bells" % _bell_shown
+		if up:
+			_bells.scale = Vector2(1.15, 1.15)
+			_bells.create_tween().tween_property(_bells, "scale", Vector2.ONE, 0.15)
 	if _chain_label.visible:
 		_chain_label.modulate.a = 0.35 + 0.65 * ComboTracker.get_time_ratio()
 
@@ -84,6 +111,10 @@ func _on_chain_changed(count: int) -> void:
 
 
 func _on_health_changed(health: int, max_health: int) -> void:
+	while _hearts.get_child_count() > max_health:
+		var extra := _hearts.get_child(_hearts.get_child_count() - 1)
+		_hearts.remove_child(extra)
+		extra.queue_free()
 	while _hearts.get_child_count() < max_health:
 		var heart := TextureRect.new()
 		heart.texture = HEART
@@ -97,6 +128,6 @@ func _on_health_changed(health: int, max_health: int) -> void:
 		var full := i < health
 		var was_full := heart.modulate.a > 0.5
 		heart.modulate = Color.WHITE if full else Color(0.25, 0.15, 0.3, 0.45)
-		if was_full and not full:
+		if was_full != full:
 			heart.scale = Vector2(1.5, 1.5)
 			heart.create_tween().tween_property(heart, "scale", Vector2.ONE, 0.25)

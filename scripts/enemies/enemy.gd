@@ -17,10 +17,11 @@ signal launched(launch_velocity: Vector2)
 signal ricocheted
 signal collided_with_enemy(other: Enemy)
 signal defeated
+signal blocked(hit: HitData)
 
 enum State { GROUNDED, STAGGERED, LAUNCHED, KNOCKED_DOWN, RECOVER, DEFEATED }
 
-const WORLD_MASK: int = 1
+const WORLD_MASK: int = 1 | 256
 const ENEMY_MASK: int = 4
 
 @export_group("Stats")
@@ -85,6 +86,8 @@ var _launch_time: float = 0.0
 
 func _ready() -> void:
 	health = max_health
+	# World, spectral barriers and one-way ledges.
+	collision_mask |= 1 | 128 | 256
 	add_to_group(&"enemy")
 	for child: Node in get_children():
 		if child is CollisionShape2D and _collision_shape == null:
@@ -121,6 +124,10 @@ func is_alive() -> bool:
 ## Entry point for every hit: hammer swings, enemy collisions, bounce pads.
 func take_hit(hit: HitData) -> void:
 	if state == State.DEFEATED:
+		return
+	if brain != null and brain.blocks(self, hit):
+		time_since_hit = 0.0
+		blocked.emit(hit)
 		return
 	health -= hit.damage
 	time_since_hit = 0.0
@@ -167,6 +174,20 @@ func defeat() -> void:
 	defeated.emit()
 
 
+## World-space rectangle of the body (for contact damage).
+func body_rect() -> Rect2:
+	if _collision_shape == null:
+		return Rect2(global_position - Vector2(24.0, 60.0), Vector2(48.0, 60.0))
+	var centre := _collision_shape.global_position
+	var rect_shape := _collision_shape.shape as RectangleShape2D
+	if rect_shape != null:
+		return Rect2(centre - rect_shape.size * 0.5, rect_shape.size)
+	var circle := _collision_shape.shape as CircleShape2D
+	if circle != null:
+		return Rect2(centre - Vector2.ONE * circle.radius, Vector2.ONE * circle.radius * 2.0)
+	return Rect2(centre - Vector2(24.0, 30.0), Vector2(48.0, 60.0))
+
+
 # --- States -------------------------------------------------------------------
 
 
@@ -181,6 +202,7 @@ func _process_grounded(delta: float) -> void:
 			velocity.y += ground_gravity * delta
 		brain.tick(self, delta)
 		move_and_slide()
+		brain.touch(self)
 		return
 	if not is_on_floor():
 		velocity.y += ground_gravity * delta

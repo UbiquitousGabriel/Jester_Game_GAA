@@ -149,7 +149,7 @@ static func dress_solid(root: Node, rect: Rect2, seed: int) -> void:
 
 ## One-way platform: wooden ledge low down, stone ledge up high, with a
 ## hanging banner and, on wide ones, drapery and a lantern.
-static func dress_platform(root: Node, rect: Rect2, seed: int) -> void:
+static func dress_platform(root: Node, rect: Rect2, seed: int, decorated: bool = true) -> void:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = seed
 	var node := Node2D.new()
@@ -157,11 +157,11 @@ static func dress_platform(root: Node, rect: Rect2, seed: int) -> void:
 	node.position = rect.position
 	node.z_index = Z_TERRAIN
 	root.add_child(node)
-	var high := rect.position.y < -450.0
+	var high := rng.randf() < 0.4 if decorated else rng.randf() < 0.5
 	var texture := LEDGE_STONE if high else LEDGE_WOOD
-	# Ledges read better slightly larger than sheet scale (2x art at 0.6).
-	var k := 0.6
-
+	if not decorated:
+		_add_ledge(node, texture, rect)
+		return
 	if rect.size.x >= 500.0 and not high:
 		var swag := Sprite2D.new()
 		swag.texture = DRAPERY
@@ -189,6 +189,12 @@ static func dress_platform(root: Node, rect: Rect2, seed: int) -> void:
 		add_light(root, glow_at, WARM, 0.8, 0.9)
 		add_glow(root, glow_at, WARM, 0.5, 0.75)
 
+	_add_ledge(node, texture, rect)
+
+
+static func _add_ledge(node: Node, texture: Texture2D, rect: Rect2) -> void:
+	# Ledges read better slightly larger than sheet scale (2x art at 0.6).
+	var k := 0.6
 	var ledge := NinePatchRect.new()
 	ledge.texture = texture
 	ledge.patch_margin_left = 40
@@ -196,7 +202,7 @@ static func dress_platform(root: Node, rect: Rect2, seed: int) -> void:
 	ledge.axis_stretch_horizontal = NinePatchRect.AXIS_STRETCH_MODE_TILE_FIT
 	ledge.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	ledge.scale = Vector2(k, k)
-	ledge.size = Vector2(rect.size.x / ledge.scale.x, texture.get_height())
+	ledge.size = Vector2(rect.size.x / k, texture.get_height())
 	ledge.position = Vector2(0.0, -6.0)
 	node.add_child(ledge)
 

@@ -150,6 +150,13 @@ func _ready() -> void:
 	LevelArt.add_embers(_camera)
 	# Draw the Jester in front of everything built above.
 	move_child(_player, -1)
+	# Esc opens the pause menu (and the way back to the title).
+	Ui.in_game = true
+	GameState.playing = false
+	Feedback.bind_player(_player)
+	for node: Node in get_tree().get_nodes_in_group(&"enemy"):
+		Feedback.bind_enemy(node as Enemy, 0)
+	Audio.music(&"carnival_gate")
 
 
 func _physics_process(_delta: float) -> void:

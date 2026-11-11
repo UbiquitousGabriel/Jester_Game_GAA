@@ -6,6 +6,11 @@ None. The project imports and runs on Godot 4.7.2 with no script errors.
 
 ## Unverified (needs a human playtest)
 
+- **Length.** The castle (131 rooms, 6 bosses, 24 heart pieces, 42 jokes, 9 charms) is built for about 10 hours, but nobody has played it start to finish. The automated tests build every room, walk through doors, fall into pits, die and respawn, collect pickups and defeat each boss with scripted damage; they cannot judge pacing or difficulty.
+- **Gate tuning.** The world generator proves every room is reachable with the abilities in order, using movement numbers worked out on paper (jump 230 px, vault 563 px, glide chasm 960 px, wall-bounce climbs). A gate that is too tight or too loose in real play is a value change in `player_controller.gd` or `build_world.py`.
+- **Boss difficulty.** Health, telegraph lengths and damage are first guesses.
+- **Music and sound** are synthesised in code (`tools/audio/synth.py`). They are complete and loop cleanly but are placeholder quality next to a composed score.
+
 - **Feel.** All tuning values are first guesses calculated on paper. The smoke test proves the mechanics function, not that they are fun.
 - Camera framing, look-ahead strength and dynamic zoom.
 - Hit-stop length and its interaction with input buffering (the smoke test runs with hit-stop off).
@@ -21,7 +26,7 @@ Charge attack scaling, upswing, wall ricochet, floor bounce, coyote time, jump b
 - Air speed can reach about 1500 after glide plus dash; the camera zooms out and the Jester gets small. Thrilling or chaotic: undecided.
 - Air hang, bounce heights, glide length and enemy aggression are first-pass values.
 - The on-screen controls text is cluttered and can overlap flying enemies.
-- No audio at all yet.
+- All characters except the Jester, the Court Guard, the mace knight and the bat knight are labelled shapes until their art arrives (see `docs/ASSET_REQUESTS.pdf`).
 
 ## Art
 

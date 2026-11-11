@@ -13,7 +13,7 @@ config_version=5
 config/name="The Jester's Court"
 config/description="A vibrant, momentum-driven 2D hack-and-slash platformer. Run fast. Bounce off the hammer. Launch enemies into other enemies."
 config/version="0.1.0"
-run/main_scene="res://scenes/levels/movement_playground.tscn"
+run/main_scene="res://scenes/ui/title_screen.tscn"
 config/features=PackedStringArray("4.7", "GL Compatibility")
 
 [autoload]
@@ -21,6 +21,9 @@ config/features=PackedStringArray("4.7", "GL Compatibility")
 InputSetup="*res://scripts/systems/input_setup.gd"
 GameFeel="*res://scripts/systems/game_feel.gd"
 ComboTracker="*res://scripts/systems/combo_tracker.gd"
+GameState="*res://scripts/systems/game_state.gd"
+Audio="*res://scripts/systems/audio.gd"
+Ui="*res://scripts/ui/ui.gd"
 
 [debug]
 
@@ -52,6 +55,8 @@ texture={
 2d_physics/layer_5="enemy_hitbox"
 2d_physics/layer_6="hazard"
 2d_physics/layer_7="prop"
+2d_physics/layer_8="spectral"
+2d_physics/layer_9="one_way"
 
 [physics]
 
