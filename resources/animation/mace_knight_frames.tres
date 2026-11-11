@@ -1,0 +1,74 @@
+[gd_resource type="SpriteFrames" load_steps=35 format=3]
+
+[ext_resource type="Texture2D" path="res://assets/characters/mace_knight/frames/idle_00.png" id="1"]
+[ext_resource type="Texture2D" path="res://assets/characters/mace_knight/frames/idle_01.png" id="2"]
+[ext_resource type="Texture2D" path="res://assets/characters/mace_knight/frames/idle_02.png" id="3"]
+[ext_resource type="Texture2D" path="res://assets/characters/mace_knight/frames/idle_03.png" id="4"]
+[ext_resource type="Texture2D" path="res://assets/characters/mace_knight/frames/idle_04.png" id="5"]
+[ext_resource type="Texture2D" path="res://assets/characters/mace_knight/frames/idle_05.png" id="6"]
+[ext_resource type="Texture2D" path="res://assets/characters/mace_knight/frames/idle_06.png" id="7"]
+[ext_resource type="Texture2D" path="res://assets/characters/mace_knight/frames/walk_00.png" id="8"]
+[ext_resource type="Texture2D" path="res://assets/characters/mace_knight/frames/walk_01.png" id="9"]
+[ext_resource type="Texture2D" path="res://assets/characters/mace_knight/frames/walk_02.png" id="10"]
+[ext_resource type="Texture2D" path="res://assets/characters/mace_knight/frames/walk_03.png" id="11"]
+[ext_resource type="Texture2D" path="res://assets/characters/mace_knight/frames/walk_04.png" id="12"]
+[ext_resource type="Texture2D" path="res://assets/characters/mace_knight/frames/walk_05.png" id="13"]
+[ext_resource type="Texture2D" path="res://assets/characters/mace_knight/frames/walk_06.png" id="14"]
+[ext_resource type="Texture2D" path="res://assets/characters/mace_knight/frames/walk_07.png" id="15"]
+[ext_resource type="Texture2D" path="res://assets/characters/mace_knight/frames/attack_00.png" id="16"]
+[ext_resource type="Texture2D" path="res://assets/characters/mace_knight/frames/attack_01.png" id="17"]
+[ext_resource type="Texture2D" path="res://assets/characters/mace_knight/frames/attack_02.png" id="18"]
+[ext_resource type="Texture2D" path="res://assets/characters/mace_knight/frames/attack_03.png" id="19"]
+[ext_resource type="Texture2D" path="res://assets/characters/mace_knight/frames/attack_04.png" id="20"]
+[ext_resource type="Texture2D" path="res://assets/characters/mace_knight/frames/attack_05.png" id="21"]
+[ext_resource type="Texture2D" path="res://assets/characters/mace_knight/frames/attack_06.png" id="22"]
+[ext_resource type="Texture2D" path="res://assets/characters/mace_knight/frames/attack_07.png" id="23"]
+[ext_resource type="Texture2D" path="res://assets/characters/mace_knight/frames/hurt_01.png" id="24"]
+[ext_resource type="Texture2D" path="res://assets/characters/mace_knight/frames/hurt_02.png" id="25"]
+[ext_resource type="Texture2D" path="res://assets/characters/mace_knight/frames/hurt_03.png" id="26"]
+[ext_resource type="Texture2D" path="res://assets/characters/mace_knight/frames/hurt_04.png" id="27"]
+[ext_resource type="Texture2D" path="res://assets/characters/mace_knight/frames/death_00.png" id="28"]
+[ext_resource type="Texture2D" path="res://assets/characters/mace_knight/frames/death_01.png" id="29"]
+[ext_resource type="Texture2D" path="res://assets/characters/mace_knight/frames/death_02.png" id="30"]
+[ext_resource type="Texture2D" path="res://assets/characters/mace_knight/frames/death_03.png" id="31"]
+[ext_resource type="Texture2D" path="res://assets/characters/mace_knight/frames/death_04.png" id="32"]
+[ext_resource type="Texture2D" path="res://assets/characters/mace_knight/frames/death_05.png" id="33"]
+[ext_resource type="Texture2D" path="res://assets/characters/mace_knight/frames/death_06.png" id="34"]
+
+[resource]
+animations = [{
+"frames": [{"duration": 1.0, "texture": ExtResource("1")}, {"duration": 1.0, "texture": ExtResource("2")}, {"duration": 1.0, "texture": ExtResource("3")}, {"duration": 1.0, "texture": ExtResource("4")}, {"duration": 1.0, "texture": ExtResource("5")}, {"duration": 1.0, "texture": ExtResource("6")}, {"duration": 1.0, "texture": ExtResource("7")}],
+"loop": true,
+"name": &"idle",
+"speed": 8.0
+}, {
+"frames": [{"duration": 1.0, "texture": ExtResource("8")}, {"duration": 1.0, "texture": ExtResource("9")}, {"duration": 1.0, "texture": ExtResource("10")}, {"duration": 1.0, "texture": ExtResource("11")}, {"duration": 1.0, "texture": ExtResource("12")}, {"duration": 1.0, "texture": ExtResource("13")}, {"duration": 1.0, "texture": ExtResource("14")}, {"duration": 1.0, "texture": ExtResource("15")}],
+"loop": true,
+"name": &"walk",
+"speed": 11.0
+}, {
+"frames": [{"duration": 1.0, "texture": ExtResource("16")}, {"duration": 1.0, "texture": ExtResource("17")}, {"duration": 1.0, "texture": ExtResource("18")}, {"duration": 1.0, "texture": ExtResource("19")}],
+"loop": false,
+"name": &"windup",
+"speed": 0.0
+}, {
+"frames": [{"duration": 1.0, "texture": ExtResource("20")}, {"duration": 1.0, "texture": ExtResource("21")}, {"duration": 1.0, "texture": ExtResource("22")}, {"duration": 1.0, "texture": ExtResource("23")}],
+"loop": false,
+"name": &"slam",
+"speed": 0.0
+}, {
+"frames": [{"duration": 1.0, "texture": ExtResource("24")}, {"duration": 1.0, "texture": ExtResource("25")}, {"duration": 1.0, "texture": ExtResource("26")}, {"duration": 1.0, "texture": ExtResource("27")}],
+"loop": false,
+"name": &"hurt",
+"speed": 14.0
+}, {
+"frames": [{"duration": 1.0, "texture": ExtResource("26")}],
+"loop": false,
+"name": &"launched",
+"speed": 1.0
+}, {
+"frames": [{"duration": 1.0, "texture": ExtResource("28")}, {"duration": 1.0, "texture": ExtResource("29")}, {"duration": 1.0, "texture": ExtResource("30")}, {"duration": 1.0, "texture": ExtResource("31")}, {"duration": 1.0, "texture": ExtResource("32")}, {"duration": 1.0, "texture": ExtResource("33")}, {"duration": 1.0, "texture": ExtResource("34")}],
+"loop": false,
+"name": &"death",
+"speed": 10.0
+}]

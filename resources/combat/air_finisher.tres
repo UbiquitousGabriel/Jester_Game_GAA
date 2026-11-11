@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="AttackData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/attack_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"air_finisher"
+damage = 2
+startup = 0.07
+active = 0.2
+recovery = 0.2
+hitbox_offset = Vector2(10, -44)
+hitbox_size = Vector2(210, 180)
+launch_vector = Vector2(1150, -720)
+inherit_velocity = 0.6
+air_bounce = 540.0
+lunge = 230.0
+hang = true
+hitstop = 0.09
+shake = 11.0

@@ -30,6 +30,8 @@ var _centre_height: float = 52.0
 
 func _ready() -> void:
 	_enemy = get_parent() as Enemy
+	if _enemy != null:
+		_enemy.collided_with_enemy.connect(_on_collided)
 	_centre_height = CommunityAideSpriteLayout.STANDING_HEIGHT * SPRITE_SCALE * 0.5
 	position = Vector2(0.0, -_centre_height)
 
@@ -107,3 +109,8 @@ func _hold(animation: StringName, frame: int) -> void:
 		_sprite.animation = animation
 	_sprite.pause()
 	_sprite.frame = frame
+
+
+func _on_collided(other: Enemy) -> void:
+	var at := (_enemy.global_position + other.global_position) * 0.5 + Vector2(0.0, -40.0)
+	Vfx.hit(_enemy.get_parent(), at, _enemy.velocity.normalized(), 1.0)

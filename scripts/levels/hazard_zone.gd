@@ -5,6 +5,9 @@ extends Area2D
 ## bounces off it instead.
 
 const HAZARD_LAYER: int = 32
+const SPIKES: Texture2D = preload("res://assets/environments/pack/spikes_floor.png")
+## World height of the spike art (slightly taller than the hurt zone).
+const ART_HEIGHT: float = 50.0
 const PLAYER_AND_ENEMY_MASK: int = 2 | 4
 
 var size: Vector2 = Vector2(200.0, 40.0)
@@ -32,22 +35,25 @@ func _ready() -> void:
 	collider.position = Vector2(size.x * 0.5, size.y * 0.7)
 	add_child(collider)
 	body_entered.connect(_on_body_entered)
+	_build_art()
 
 
-func _draw() -> void:
-	var spike_width := 40.0
-	var count := maxi(int(size.x / spike_width), 1)
-	var step := size.x / float(count)
+func _build_art() -> void:
+	var k := ART_HEIGHT / SPIKES.get_height()
+	var piece := SPIKES.get_width() * k
+	var count := maxi(1, roundi(size.x / piece))
+	var piece_w := size.x / float(count)
 	for i: int in count:
-		var left := float(i) * step
-		var points := PackedVector2Array(
-			[Vector2(left, size.y), Vector2(left + step * 0.5, 0.0), Vector2(left + step, size.y)]
-		)
-		draw_colored_polygon(points, color)
+		var sprite := Sprite2D.new()
+		sprite.texture = SPIKES
+		sprite.centered = false
+		sprite.scale = Vector2(piece_w / SPIKES.get_width(), k)
+		sprite.position = Vector2(float(i) * piece_w, size.y - ART_HEIGHT + 4.0)
+		add_child(sprite)
 
 
 func _on_body_entered(body: Node2D) -> void:
 	if body is Player:
-		(body as Player).die()
+		(body as Player).hazard_hit()
 	elif body is Enemy:
 		(body as Enemy).defeat()

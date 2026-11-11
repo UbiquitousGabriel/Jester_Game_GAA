@@ -18,6 +18,9 @@ const ATTACK_PHASES := {
 	&"light_up": [&"attack_up", [0, 1], [2, 3, 4], [5, 6]],
 	&"heavy": [&"slam", [2, 3], [4, 5], [6, 7]],
 	&"air_down": [&"pogo_strike", [0, 1], [2], [2]],
+	&"air_1": [&"air_swing_1", [0, 1], [2, 3], [4]],
+	&"air_2": [&"air_swing_2", [0, 1], [2, 3], [4]],
+	&"air_finisher": [&"air_finisher", [0, 1], [2, 3, 4, 5, 6], [7, 8]],
 }
 
 ## Sprites are authored at 2x and drawn at half size.
@@ -60,6 +63,10 @@ func _ready() -> void:
 	_player.pogoed.connect(_on_pogoed)
 	_player.vaulted.connect(_on_vaulted)
 	_player.died.connect(_on_died)
+	_player.damaged.connect(_on_damaged)
+	_player.glide_started.connect(_on_glide_started)
+	if _hammer != null:
+		_hammer.hit_landed.connect(_on_hit_landed)
 	_player.respawned.connect(_on_respawned)
 
 
@@ -68,6 +75,11 @@ func _process(delta: float) -> void:
 		return
 	_one_shot_time = maxf(_one_shot_time - delta, 0.0)
 	_update_animation()
+	# Flicker while invulnerable after a hit.
+	if _player.is_invulnerable() and not _player.is_dead():
+		_sprite.self_modulate.a = 0.35 if int(Time.get_ticks_msec() / 70) % 2 == 0 else 1.0
+	else:
+		_sprite.self_modulate.a = 1.0
 	_update_afterimages(delta)
 
 	_squash = move_toward(_squash, 0.0, delta * 6.0)
@@ -92,6 +104,14 @@ func _update_animation() -> void:
 		if _hammer.is_attacking() and _hammer.current_attack != null:
 			if _show_attack(_hammer.current_attack.id):
 				return
+
+	if _player.is_hurt():
+		_show_frame(&"hurt", 1)
+		return
+
+	if _player.is_gliding():
+		_play(&"air_spin")
+		return
 
 	if _one_shot_time > 0.0:
 		return
@@ -200,8 +220,19 @@ func _on_jumped() -> void:
 	_sprite.play(&"jump_rise")
 
 
+func _on_hit_landed(target: Node, hit: HitData) -> void:
+	var target_2d := target as Node2D
+	if target_2d == null:
+		return
+	var at := target_2d.global_position + Vector2(0.0, -40.0)
+	var power := clampf(hit.launch_velocity.length() / 1100.0, 0.7, 1.6)
+	Vfx.hit(_player.get_parent(), at, hit.launch_velocity.normalized(), power)
+
+
 func _on_landed(impact_speed: float) -> void:
 	_squash = clampf(impact_speed / 1400.0, 0.15, 0.9)
+	if impact_speed > 450.0:
+		Vfx.dust(_player.get_parent(), _player.global_position, clampf(impact_speed / 1100.0, 0.7, 1.5))
 	# Only plant the landing pose when not carrying run speed into it.
 	if absf(_player.velocity.x) < 120.0 and impact_speed > 350.0:
 		_play_one_shot(&"land")
@@ -209,12 +240,24 @@ func _on_landed(impact_speed: float) -> void:
 
 func _on_pogoed() -> void:
 	_squash = -0.8
+	Vfx.dust(_player.get_parent(), _player.global_position + Vector2(0.0, 30.0), 0.8)
 	_play_one_shot(&"pogo_bounce")
 
 
-func _on_vaulted(_perfect: bool) -> void:
+func _on_vaulted(perfect: bool) -> void:
 	_squash = -0.9
+	Vfx.dust(_player.get_parent(), _player.global_position, 1.3 if perfect else 1.0)
 	_play_one_shot(&"vault")
+
+
+func _on_damaged(_amount: int) -> void:
+	if not _player.is_dead():
+		Vfx.hit(_player.get_parent(), _player.global_position + Vector2(0.0, -46.0), Vector2.UP, 0.8)
+
+
+func _on_glide_started() -> void:
+	_squash = -0.5
+	Vfx.dust(_player.get_parent(), _player.global_position, 0.7)
 
 
 func _on_died() -> void:

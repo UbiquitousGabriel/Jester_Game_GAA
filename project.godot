@@ -36,6 +36,13 @@ window/size/window_height_override=720
 window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
 
+[importer_defaults]
+
+texture={
+"mipmaps/generate": true,
+"process/fix_alpha_border": true
+}
+
 [layer_names]
 
 2d_physics/layer_1="world"

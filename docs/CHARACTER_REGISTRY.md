@@ -28,6 +28,13 @@ Source: Development Bible 2.0, section 3. Species here is canonical. Asset statu
 | Porcelain Courtier | Noble in enchanted porcelain; shatters into porcelain, not bone | concept |
 | Courtier, Noble, Bard, Chef | NPCs, side quests, stage comedy | concept |
 
+## In-game enemies (creative director's sprites)
+
+| Enemy | Category | Role | Asset status |
+| --- | --- | --- | --- |
+| Mace Knight | Armoured soldier (helmeted; face unseen) | Heavy bruiser: 8 health, armoured windup, 2-damage overhead slam | in game: idle, walk, attack, hurt, death (35 frames) |
+| Bat Knight | Magical creature, crowned skull (rare undead category) | Flyer: 3 health, perches then dives, 1-damage claw | in game: fly, glide, swoop, hurt, death (28 frames) |
+
 ## Stand-ins
 
 | Character | Species | Used as | Asset status |

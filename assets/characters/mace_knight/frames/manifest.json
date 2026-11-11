@@ -1,0 +1,296 @@
+{
+ "id": "mace_knight",
+ "canvas": [
+  513,
+  287
+ ],
+ "anchor": [
+  242,
+  279
+ ],
+ "scale": 1.6231884057971016,
+ "anchor_mode": "feet",
+ "source": "assets/source/enemies/mace_knight/mace_knight_sheet.png",
+ "frames": {
+  "idle_00.png": {
+   "source_box": [
+    54,
+    13,
+    274,
+    151
+   ]
+  },
+  "idle_01.png": {
+   "source_box": [
+    301,
+    13,
+    519,
+    151
+   ]
+  },
+  "idle_02.png": {
+   "source_box": [
+    541,
+    13,
+    755,
+    151
+   ]
+  },
+  "idle_03.png": {
+   "source_box": [
+    777,
+    12,
+    993,
+    151
+   ]
+  },
+  "idle_04.png": {
+   "source_box": [
+    1014,
+    12,
+    1232,
+    151
+   ]
+  },
+  "idle_05.png": {
+   "source_box": [
+    1254,
+    15,
+    1472,
+    151
+   ]
+  },
+  "idle_06.png": {
+   "source_box": [
+    1498,
+    18,
+    1714,
+    151
+   ]
+  },
+  "walk_00.png": {
+   "source_box": [
+    53,
+    181,
+    257,
+    316
+   ]
+  },
+  "walk_01.png": {
+   "source_box": [
+    273,
+    180,
+    475,
+    316
+   ]
+  },
+  "walk_02.png": {
+   "source_box": [
+    488,
+    180,
+    684,
+    316
+   ]
+  },
+  "walk_03.png": {
+   "source_box": [
+    711,
+    183,
+    887,
+    318
+   ]
+  },
+  "walk_04.png": {
+   "source_box": [
+    911,
+    180,
+    1086,
+    319
+   ]
+  },
+  "walk_05.png": {
+   "source_box": [
+    1104,
+    183,
+    1295,
+    319
+   ]
+  },
+  "walk_06.png": {
+   "source_box": [
+    1312,
+    180,
+    1509,
+    318
+   ]
+  },
+  "walk_07.png": {
+   "source_box": [
+    1520,
+    186,
+    1723,
+    318
+   ]
+  },
+  "attack_00.png": {
+   "source_box": [
+    48,
+    377,
+    242,
+    515
+   ]
+  },
+  "attack_01.png": {
+   "source_box": [
+    252,
+    355,
+    433,
+    514
+   ]
+  },
+  "attack_02.png": {
+   "source_box": [
+    446,
+    347,
+    615,
+    514
+   ]
+  },
+  "attack_03.png": {
+   "source_box": [
+    657,
+    347,
+    829,
+    514
+   ]
+  },
+  "attack_04.png": {
+   "source_box": [
+    835,
+    360,
+    1037,
+    518
+   ]
+  },
+  "attack_05.png": {
+   "source_box": [
+    1050,
+    349,
+    1247,
+    518
+   ]
+  },
+  "attack_06.png": {
+   "source_box": [
+    1253,
+    407,
+    1493,
+    517
+   ]
+  },
+  "attack_07.png": {
+   "source_box": [
+    1479,
+    410,
+    1726,
+    517
+   ]
+  },
+  "hurt_00.png": {
+   "source_box": [
+    48,
+    541,
+    229,
+    692
+   ]
+  },
+  "hurt_01.png": {
+   "source_box": [
+    276,
+    550,
+    471,
+    692
+   ]
+  },
+  "hurt_02.png": {
+   "source_box": [
+    499,
+    544,
+    678,
+    690
+   ]
+  },
+  "hurt_03.png": {
+   "source_box": [
+    720,
+    553,
+    899,
+    690
+   ]
+  },
+  "hurt_04.png": {
+   "source_box": [
+    936,
+    565,
+    1127,
+    691
+   ]
+  },
+  "death_00.png": {
+   "source_box": [
+    43,
+    718,
+    235,
+    869
+   ]
+  },
+  "death_01.png": {
+   "source_box": [
+    263,
+    720,
+    433,
+    870
+   ]
+  },
+  "death_02.png": {
+   "source_box": [
+    471,
+    742,
+    637,
+    868
+   ]
+  },
+  "death_03.png": {
+   "source_box": [
+    671,
+    764,
+    888,
+    869
+   ]
+  },
+  "death_04.png": {
+   "source_box": [
+    901,
+    779,
+    1139,
+    871
+   ]
+  },
+  "death_05.png": {
+   "source_box": [
+    1145,
+    792,
+    1400,
+    872
+   ]
+  },
+  "death_06.png": {
+   "source_box": [
+    1410,
+    801,
+    1711,
+    872
+   ]
+  }
+ }
+}

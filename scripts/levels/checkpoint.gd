@@ -4,8 +4,16 @@ extends Area2D
 ## restarts the whole room (Bible section 16 exit criteria).
 
 const PLAYER_MASK: int = 2
+const FLAG_ON: Texture2D = preload("res://assets/environments/carnival_gate/flag_on.png")
+const FLAG_OFF: Texture2D = preload("res://assets/environments/carnival_gate/flag_off.png")
 
-var is_active: bool = false
+var is_active: bool = false:
+	set(value):
+		is_active = value
+		_refresh()
+
+var _sprite: Sprite2D
+var _light: PointLight2D
 
 
 ## `feet_position` is where the player will respawn (on the ground).
@@ -26,15 +34,20 @@ func _ready() -> void:
 	collider.position = Vector2(0.0, -80.0)
 	add_child(collider)
 	body_entered.connect(_on_body_entered)
+	_sprite = Sprite2D.new()
+	_sprite.centered = false
+	_sprite.scale = Vector2(0.5, 0.5)
+	_sprite.position = Vector2(-13.0, -148.0)
+	add_child(_sprite)
+	_light = LevelArt.add_light(self, Vector2(20.0, -110.0), Color(1.0, 0.75, 0.4), 0.7, 0.7)
+	_refresh()
 
 
-func _draw() -> void:
-	var flag_color := Color(0.98, 0.78, 0.25) if is_active else Color(0.55, 0.5, 0.62)
-	draw_line(Vector2(0.0, 0.0), Vector2(0.0, -130.0), Color(0.3, 0.22, 0.36), 6.0)
-	draw_colored_polygon(
-		PackedVector2Array([Vector2(3.0, -130.0), Vector2(63.0, -110.0), Vector2(3.0, -90.0)]),
-		flag_color
-	)
+func _refresh() -> void:
+	if _sprite == null:
+		return
+	_sprite.texture = FLAG_ON if is_active else FLAG_OFF
+	_light.visible = is_active
 
 
 func _on_body_entered(body: Node2D) -> void:
@@ -45,7 +58,7 @@ func _on_body_entered(body: Node2D) -> void:
 		var checkpoint := other as Checkpoint
 		if checkpoint != null and checkpoint != self and checkpoint.is_active:
 			checkpoint.is_active = false
-			checkpoint.queue_redraw()
 	player.respawn_position = global_position + Vector2(0.0, -4.0)
-	is_active = true
-	queue_redraw()
+	if not is_active:
+		is_active = true
+		GameFeel.shake(3.0)

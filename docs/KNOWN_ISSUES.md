@@ -16,11 +16,20 @@ None. The project imports and runs on Godot 4.7.2 with no script errors.
 
 Charge attack scaling, upswing, wall ricochet, floor bounce, coyote time, jump buffering, perfect-vault timing, checkpoints beyond the first, the kill plane.
 
+## Feel (needs the creative director's playtest)
+
+- Air speed can reach about 1500 after glide plus dash; the camera zooms out and the Jester gets small. Thrilling or chaotic: undecided.
+- Air hang, bounce heights, glide length and enemy aggression are first-pass values.
+- The on-screen controls text is cluttered and can overlap flying enemies.
+- No audio at all yet.
+
 ## Art
 
 - **Scale check needed.** The Jester renders about 58 px tall at 1080p with the default camera (5.4% of screen height, inside the Bible's 5-9% but at the small end). Judge in playtest: raise `sprite_scale` on the Jester's Visual node or `base_zoom` on the camera.
 - The Court Guard is played by the Community Aide stand-in; his sheets have no attack, hit or knocked-down frames, so the lying pose is the landing grimace rotated 90 degrees. Faint red fringing in his hair is in the source art.
-- The level and props are still procedural placeholders, so the painted characters stand out against them.
+- The aerial Jester sheet is drawn at half the resolution of his other sheets, so spin frames are softer.
+- The tileset pack's parallax backgrounds are too small (465 px wide) to use full screen; generated backdrops stand in.
+- Pack lanterns keep a faint dark glow from the sheet behind them.
 - No painted frames exist yet for: dash (uses a run frame), wall contact, taking a non-fatal hit (the hurt frames play only on death).
 - Upswing reuses the overhead slam windup; a dedicated upward swing would read better.
 - The heavy attack launches enemies forward, but its painted swing is an overhead slam into the ground.

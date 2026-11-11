@@ -23,5 +23,7 @@ Defaults are registered in `scripts/systems/input_setup.gd`. In-game remapping i
 - **Pogo:** in the air, hold Down + Light. Bounces off enemies, crates and spikes.
 - **Heavy:** tap Heavy, or hold to charge and release.
 - **Vault:** on the ground, hold Down + Heavy. Add Left or Right for a forward vault. Vault just after landing for a perfect vault.
+- **Air combo:** in the air, press Light up to three times (swing, swing, spin finisher). Swings hang the Jester in the air; every connecting hit bounces him up and refreshes the air dash and glide.
+- **Hammer twirl glide:** press Jump again in the air and hold. Slows the fall, keeps speed, and the spinning hammer hits anything it touches. About 1.2 s per airtime, refreshed by landing, pogo or air hits.
 
 The Bible lists Special on a trigger; it is on the left shoulder for now because no special exists yet.

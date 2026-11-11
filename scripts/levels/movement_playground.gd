@@ -9,16 +9,39 @@ extends Node2D
 ## Coordinates: y = 0 is the main ground surface, negative y is up.
 
 const FOOT_GUARD_SCENE: PackedScene = preload("res://scenes/enemies/foot_guard.tscn")
+const MACE_KNIGHT_SCENE: PackedScene = preload("res://scenes/enemies/mace_knight.tscn")
+const BAT_KNIGHT_SCENE: PackedScene = preload("res://scenes/enemies/bat_knight.tscn")
 
 const WORLD_LAYER: int = 1
 const KILL_PLANE_Y: float = 760.0
 const CAMERA_BOUNDS := Rect2(-240.0, -1500.0, 6880.0, 2100.0)
 
-const STONE := Color(0.33, 0.26, 0.45)
-const STONE_TRIM := Color(0.55, 0.45, 0.7)
-const PLATFORM := Color(0.45, 0.24, 0.5)
-const PLATFORM_TRIM := Color(0.98, 0.76, 0.22)
-const BANNER := Color(0.74, 0.13, 0.22)
+## Camera centre y when the Jester stands on the main ground; backdrops are
+## aligned to it.
+const REST_CAMERA_Y := -150.0
+
+const PACK := "res://assets/environments/pack/"
+## Decor: texture, bottom-centre position, scale, flip, z (-10 behind, 1 front).
+const DECOR := [
+	["tent.png", Vector2(380.0, 0.0), 1.55, false, -12],
+	["barrel.png", Vector2(560.0, 0.0), 1.0, false, -10],
+	["barrel.png", Vector2(600.0, 0.0), 0.9, true, -11],
+	["jester_bust.png", Vector2(1420.0, 0.0), 1.0, false, -10],
+	["cart.png", Vector2(2150.0, 0.0), 1.2, false, -12],
+	["flower_pot.png", Vector2(2280.0, 0.0), 0.8, false, -10],
+	["arch_vines.png", Vector2(3080.0, 0.0), 1.4, false, -14],
+	["fire.png", Vector2(3330.0, 0.0), 0.8, false, -10],
+	["rubble.png", Vector2(3960.0, 0.0), 1.0, false, -10],
+	["barrel.png", Vector2(4420.0, 0.0), 1.0, true, -10],
+	["arch_column.png", Vector2(4980.0, 0.0), 1.25, false, -14],
+	["flower_pot.png", Vector2(5560.0, 0.0), 0.8, true, -10],
+	["gate_golden.png", Vector2(6290.0, 0.0), 1.2, false, -12],
+]
+const LAMP_POSTS: Array[float] = [820.0, 1980.0, 2900.0, 4100.0, 4700.0, 5300.0, 6050.0]
+## Warm firelight on the decor that emits it: position, energy, size.
+const FIRE_LIGHTS := [
+	[Vector2(3330.0, -50.0), 1.0, 1.4],
+]
 
 ## Solid blocks: ground, pit floors, walls.
 const SOLIDS: Array[Rect2] = [
@@ -91,12 +114,25 @@ const GUARDS: Array[Vector3] = [
 	Vector3(3150.0, 0.0, 1.0),
 	Vector3(2750.0, -210.0, 1.0),
 	Vector3(3650.0, 60.0, 0.0),  # stepping stone: pogo off him to cross the gap
-	Vector3(4300.0, 0.0, 1.0),
 	Vector3(4550.0, 0.0, 1.0),
 	Vector3(4800.0, 0.0, 1.0),
-	Vector3(5050.0, 0.0, 1.0),
 	Vector3(5650.0, -520.0, 1.0),
-	Vector3(5850.0, -520.0, 1.0),
+]
+
+## Mace knights (heavy ground bruisers): feet positions.
+const KNIGHTS: Array[Vector2] = [
+	Vector2(4300.0, 0.0),
+	Vector2(5150.0, 0.0),
+	Vector2(5880.0, -520.0),
+]
+
+## Bat knights (flyers): roost positions they hover around.
+const BATS: Array[Vector2] = [
+	Vector2(1700.0, -470.0),
+	Vector2(2650.0, -760.0),
+	Vector2(3660.0, -330.0),
+	Vector2(4650.0, -560.0),
+	Vector2(5550.0, -780.0),
 ]
 
 @onready var _player: Player = $Player
@@ -104,10 +140,14 @@ const GUARDS: Array[Vector3] = [
 
 
 func _ready() -> void:
+	LevelArt.add_sky(self)
+	LevelArt.add_backdrops(self, _camera, 0.0, REST_CAMERA_Y)
 	_build_terrain()
+	_build_decor()
 	_build_gadgets()
 	_spawn_guards()
 	_camera.set_bounds(CAMERA_BOUNDS)
+	LevelArt.add_embers(_camera)
 	# Draw the Jester in front of everything built above.
 	move_child(_player, -1)
 
@@ -119,7 +159,7 @@ func _physics_process(_delta: float) -> void:
 		return
 	# Safety net below the level.
 	if _player.global_position.y > KILL_PLANE_Y:
-		_player.die()
+		_player.hazard_hit()
 	for node: Node in get_tree().get_nodes_in_group(&"enemy"):
 		var enemy := node as Enemy
 		if enemy != null and enemy.global_position.y > KILL_PLANE_Y:
@@ -127,13 +167,24 @@ func _physics_process(_delta: float) -> void:
 
 
 func _build_terrain() -> void:
-	for rect: Rect2 in SOLIDS:
-		_add_block(rect, STONE, STONE_TRIM, false)
-	for rect: Rect2 in PLATFORMS:
-		_add_block(rect, PLATFORM, PLATFORM_TRIM, true)
-		# Hanging banner as a landmark under each platform.
-		var banner_top := rect.position + Vector2(rect.size.x * 0.5 - 24.0, rect.size.y)
-		add_child(_make_quad(Rect2(banner_top, Vector2(48.0, 90.0)), BANNER))
+	for i: int in SOLIDS.size():
+		_add_block(SOLIDS[i], false)
+		LevelArt.dress_solid(self, SOLIDS[i], 100 + i)
+	for i: int in PLATFORMS.size():
+		_add_block(PLATFORMS[i], true)
+		LevelArt.dress_platform(self, PLATFORMS[i], 200 + i)
+
+
+func _build_decor() -> void:
+	LevelArt.add_gate(self, Vector2(40.0, 0.0))
+	for spec: Array in DECOR:
+		var texture: Texture2D = load(PACK + String(spec[0]))
+		LevelArt.add_prop(self, texture, spec[1], spec[2], spec[3], spec[4])
+	for x: float in LAMP_POSTS:
+		LevelArt.add_lamp_post(self, Vector2(x, 0.0))
+	for light: Array in FIRE_LIGHTS:
+		LevelArt.add_light(self, light[0], Color(1.0, 0.6, 0.3), light[1], light[2])
+		LevelArt.add_glow(self, light[0], Color(1.0, 0.6, 0.3), 0.5, 1.2)
 
 
 func _build_gadgets() -> void:
@@ -153,9 +204,18 @@ func _spawn_guards() -> void:
 		guard.position = Vector2(spawn.x, spawn.y)
 		guard.patrol_enabled = spawn.z > 0.5
 		add_child(guard)
+	for feet: Vector2 in KNIGHTS:
+		var knight := MACE_KNIGHT_SCENE.instantiate() as Enemy
+		knight.position = feet
+		add_child(knight)
+	for roost: Vector2 in BATS:
+		var bat := BAT_KNIGHT_SCENE.instantiate() as Enemy
+		bat.position = roost
+		add_child(bat)
 
 
-func _add_block(rect: Rect2, fill: Color, trim: Color, one_way: bool) -> void:
+## Collision only; LevelArt draws the visuals.
+func _add_block(rect: Rect2, one_way: bool) -> void:
 	var body := StaticBody2D.new()
 	body.position = rect.position
 	body.collision_layer = WORLD_LAYER
@@ -168,22 +228,5 @@ func _add_block(rect: Rect2, fill: Color, trim: Color, one_way: bool) -> void:
 	collider.position = rect.size * 0.5
 	collider.one_way_collision = one_way
 	body.add_child(collider)
-
-	body.add_child(_make_quad(Rect2(Vector2.ZERO, rect.size), fill))
-	# Bright top edge so landing surfaces read clearly at the wide zoom.
-	body.add_child(_make_quad(Rect2(Vector2.ZERO, Vector2(rect.size.x, 8.0)), trim))
 	add_child(body)
 
-
-func _make_quad(rect: Rect2, color: Color) -> Polygon2D:
-	var quad := Polygon2D.new()
-	quad.polygon = PackedVector2Array(
-		[
-			rect.position,
-			Vector2(rect.end.x, rect.position.y),
-			rect.end,
-			Vector2(rect.position.x, rect.end.y),
-		]
-	)
-	quad.color = color
-	return quad

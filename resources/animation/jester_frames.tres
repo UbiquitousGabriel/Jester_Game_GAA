@@ -1,4 +1,4 @@
-[gd_resource type="SpriteFrames" load_steps=55 format=3]
+[gd_resource type="SpriteFrames" load_steps=79 format=3]
 
 [ext_resource type="Texture2D" path="res://assets/characters/jester/frames/idle_00.png" id="1"]
 [ext_resource type="Texture2D" path="res://assets/characters/jester/frames/idle_01.png" id="2"]
@@ -54,6 +54,30 @@
 [ext_resource type="Texture2D" path="res://assets/characters/jester/frames/damage_05.png" id="52"]
 [ext_resource type="Texture2D" path="res://assets/characters/jester/frames/damage_06.png" id="53"]
 [ext_resource type="Texture2D" path="res://assets/characters/jester/frames/damage_07.png" id="54"]
+[ext_resource type="Texture2D" path="res://assets/characters/jester/frames/aerial_00.png" id="55"]
+[ext_resource type="Texture2D" path="res://assets/characters/jester/frames/aerial_01.png" id="56"]
+[ext_resource type="Texture2D" path="res://assets/characters/jester/frames/aerial_08.png" id="57"]
+[ext_resource type="Texture2D" path="res://assets/characters/jester/frames/aerial_09.png" id="58"]
+[ext_resource type="Texture2D" path="res://assets/characters/jester/frames/aerial_10.png" id="59"]
+[ext_resource type="Texture2D" path="res://assets/characters/jester/frames/aerial_02.png" id="60"]
+[ext_resource type="Texture2D" path="res://assets/characters/jester/frames/aerial_13.png" id="61"]
+[ext_resource type="Texture2D" path="res://assets/characters/jester/frames/aerial_14.png" id="62"]
+[ext_resource type="Texture2D" path="res://assets/characters/jester/frames/aerial_15.png" id="63"]
+[ext_resource type="Texture2D" path="res://assets/characters/jester/frames/aerial_03.png" id="64"]
+[ext_resource type="Texture2D" path="res://assets/characters/jester/frames/aerial_04.png" id="65"]
+[ext_resource type="Texture2D" path="res://assets/characters/jester/frames/aerial_05.png" id="66"]
+[ext_resource type="Texture2D" path="res://assets/characters/jester/frames/aerial_06.png" id="67"]
+[ext_resource type="Texture2D" path="res://assets/characters/jester/frames/aerial_07.png" id="68"]
+[ext_resource type="Texture2D" path="res://assets/characters/jester/frames/aerial_11.png" id="69"]
+[ext_resource type="Texture2D" path="res://assets/characters/jester/frames/aerial_12.png" id="70"]
+[ext_resource type="Texture2D" path="res://assets/characters/jester/frames/aerial_16.png" id="71"]
+[ext_resource type="Texture2D" path="res://assets/characters/jester/frames/aerial_17.png" id="72"]
+[ext_resource type="Texture2D" path="res://assets/characters/jester/frames/aerial_18.png" id="73"]
+[ext_resource type="Texture2D" path="res://assets/characters/jester/frames/aerial_19.png" id="74"]
+[ext_resource type="Texture2D" path="res://assets/characters/jester/frames/aerial_20.png" id="75"]
+[ext_resource type="Texture2D" path="res://assets/characters/jester/frames/aerial_21.png" id="76"]
+[ext_resource type="Texture2D" path="res://assets/characters/jester/frames/aerial_22.png" id="77"]
+[ext_resource type="Texture2D" path="res://assets/characters/jester/frames/aerial_23.png" id="78"]
 
 [resource]
 animations = [
@@ -142,4 +166,29 @@ animations = [
 "loop": false,
 "name": &"defeat",
 "speed": 7.0
+}, {
+"frames": [{"duration": 1.0, "texture": ExtResource("55")}, {"duration": 1.0, "texture": ExtResource("56")}, {"duration": 1.0, "texture": ExtResource("57")}, {"duration": 1.0, "texture": ExtResource("58")}, {"duration": 1.0, "texture": ExtResource("59")}],
+"loop": false,
+"name": &"air_swing_1",
+"speed": 0.0
+}, {
+"frames": [{"duration": 1.0, "texture": ExtResource("56")}, {"duration": 1.0, "texture": ExtResource("60")}, {"duration": 1.0, "texture": ExtResource("61")}, {"duration": 1.0, "texture": ExtResource("62")}, {"duration": 1.0, "texture": ExtResource("63")}],
+"loop": false,
+"name": &"air_swing_2",
+"speed": 0.0
+}, {
+"frames": [{"duration": 1.0, "texture": ExtResource("64")}, {"duration": 1.0, "texture": ExtResource("65")}, {"duration": 1.0, "texture": ExtResource("66")}, {"duration": 1.0, "texture": ExtResource("67")}, {"duration": 1.0, "texture": ExtResource("68")}, {"duration": 1.0, "texture": ExtResource("69")}, {"duration": 1.0, "texture": ExtResource("70")}, {"duration": 1.0, "texture": ExtResource("71")}, {"duration": 1.0, "texture": ExtResource("72")}],
+"loop": false,
+"name": &"air_finisher",
+"speed": 0.0
+}, {
+"frames": [{"duration": 1.0, "texture": ExtResource("64")}, {"duration": 1.0, "texture": ExtResource("65")}, {"duration": 1.0, "texture": ExtResource("66")}, {"duration": 1.0, "texture": ExtResource("67")}, {"duration": 1.0, "texture": ExtResource("68")}, {"duration": 1.0, "texture": ExtResource("69")}, {"duration": 1.0, "texture": ExtResource("70")}],
+"loop": true,
+"name": &"air_spin",
+"speed": 22.0
+}, {
+"frames": [{"duration": 1.0, "texture": ExtResource("73")}, {"duration": 1.0, "texture": ExtResource("74")}, {"duration": 1.0, "texture": ExtResource("75")}, {"duration": 1.0, "texture": ExtResource("76")}, {"duration": 1.0, "texture": ExtResource("77")}, {"duration": 1.0, "texture": ExtResource("78")}],
+"loop": true,
+"name": &"air_ready",
+"speed": 12.0
 }]
