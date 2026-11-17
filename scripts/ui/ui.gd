@@ -175,6 +175,8 @@ func _open(panel: Control) -> void:
 		_modal.queue_free()
 	_modal = panel
 	_modal_age = 0.0
+	# Above the fade overlay (z 100): story cards open while the screen is black.
+	panel.z_index = 110
 	add_child(panel)
 	get_tree().paused = true
 
@@ -552,6 +554,10 @@ func story_cards(lines: Array, final_text: String = "") -> void:
 	text.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	text.custom_minimum_size = Vector2(1300.0, 0.0)
 	centre.add_child(text)
+	var hint := _label("Jump / Enter: continue    Esc: skip", 22, Color(CREAM, 0.6))
+	hint.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
+	hint.position = Vector2(-560.0, -70.0)
+	root.add_child(hint)
 	var all := lines.duplicate()
 	if final_text != "":
 		all.append(final_text)
